@@ -1,1484 +1,1588 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Anime Store — интернет-магазин фигурок</title>
-  <link rel="icon" href="favicon.ico" type="image/x-icon">
+  <link rel="icon" href="favicon.ico" type="image/x-icon" />
 
   <style>
-    /* ===== THEMES (переменные) ===== */
-:root{
-  --accent: #4f46e5;          /* основной акцент (по умолчанию фиолетовый) */
-  --accent-2: #3b35c9;        /* темнее для hover/градиентов */
-  --header-bg: #111;
-  --nav-bg: #222;
-  --surface: rgba(255,255,255,0.75);
-  --text: #111;
-}
+    /* =======================
+       1) Variables / Themes
+    ======================== */
+    :root{
+      --accent: #8b5cf6;
+      --accent-2: #7c3aed;
 
-/* Плавное переключение цветов */
-body, header, nav, .container, .btn, .accent, .badge, .feature, .card{
-  transition: background-color .25s ease, color .25s ease, border-color .25s ease, box-shadow .25s ease;
-}
+      --header-bg: #111;
+      --nav-bg: #222;
 
-/* применяем переменные */
-header{
-  background: var(--header-bg);
-}
+      --bg-overlay: linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.85));
+      --text-main: #f3f3f3;
+      --card-bg: rgba(25,25,25,0.95);
 
-nav{
-  background: var(--nav-bg);
-}
-
-/* выделение/полоска в меню = акцент */
-nav button.activeTab{
-  background: rgba(255,255,255,0.14);
-}
-nav button::after{
-  background: var(--accent);
-}
-
-/* контейнер */
-.container{
-  background: var(--surface);
-}
-
-/* “пилюля” Anime Store */
-.accent{
-  color: #fff;
-  background: var(--accent);
-}
-
-/* кнопки */
-.btn{
-  background: var(--accent);
-  color: #fff;
-}
-.btn:hover{
-  background: var(--accent-2);
-}
-
-.btn.ghost{
-  background: rgba(255,255,255,0.45);
-  color: var(--text);
-  border: 1px solid rgba(0,0,0,0.08);
-}
-
-/* маленькая кнопка в hero */
-.miniBtn{
-  background: var(--accent);
-}
-
-/* карточки — легкий акцент на hover */
-.card:hover{
-  box-shadow: 0 12px 30px color-mix(in srgb, var(--accent) 25%, rgba(0,0,0,0.15));
-}
-
-/* ===== Theme Switcher UI ===== */
-.theme-switch{
-  position: fixed;
-  right: 16px;
-  bottom: 16px;
-  z-index: 9998;
-  background: rgba(255,255,255,0.75);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255,255,255,0.35);
-  padding: 10px 12px;
-  border-radius: 16px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.18);
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  color: #111;
-}
-
-.theme-dots{
-  display: flex;
-  gap: 8px;
-}
-
-.theme-dot{
-  width: 16px;
-  height: 16px;
-  border-radius: 999px;
-  border: 2px solid rgba(0,0,0,0.15);
-  cursor: pointer;
-  outline: none;
-}
-.theme-dot.active{
-  border-color: rgba(0,0,0,0.55);
-  transform: scale(1.05);
-}
-
-.theme-dot.red{ background: #ef4444; }
-.theme-dot.blue{ background: #3b82f6; }
-.theme-dot.orange{ background: #f97316; }
-.theme-dot.purple{ background: #8b5cf6; }
-
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      background: #f4f4f4;
+      --shadow: 0 10px 30px rgba(0,0,0,0.18);
+      --radius: 14px;
     }
 
-    header {
-      background: #111;
-      color: white;
-      padding: 20px;
+    body.light{
+      --bg-overlay: linear-gradient(rgba(255,255,255,0.65), rgba(255,255,255,0.85));
+      --text-main: #111;
+      --card-bg: #ffffff;
+    }
+    body.dark{
+      --bg-overlay: linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.85));
+      --text-main: #f3f3f3;
+      --card-bg: rgba(25,25,25,0.95);
+    }
+
+    /* =======================
+       2) Base
+    ======================== */
+    *{ box-sizing: border-box; }
+    html, body{ width: 100%; overflow-x: hidden; }
+    body{
+      font-family: Arial, sans-serif;
+      margin: 0;
+      color: var(--text-main);
+    }
+
+    body::before{
+      content: "";
+      position: fixed;
+      inset: 0;
+      background:
+        var(--bg-overlay),
+        url("https://i.pinimg.com/736x/9f/79/63/9f796349f7fff04530cf20b146dd10da.jpg")
+        center / cover no-repeat;
+      z-index: -1;
+    }
+
+    /* smooth */
+    body, header, nav, .container, .btn, .accent, .badge, .feature, .card, .orderCard{
+      transition: background-color .25s ease, color .25s ease, border-color .25s ease, box-shadow .25s ease, transform .25s ease;
+    }
+
+    header{
+      background: var(--header-bg);
+      color: #fff;
+      padding: 18px 14px;
       text-align: center;
     }
 
-    nav {
-      background: #222;
+    nav{
+      background: var(--nav-bg);
       display: flex;
       justify-content: center;
       gap: 10px;
-    }
-
-    nav button {
-      background: none;
-      border: none;
-      color: white;
-      padding: 15px 25px;
-      cursor: pointer;
-      font-size: 16px;
-    }
-
-    nav button:hover {
-      background: #444;
-    }
-
-    nav button.activeTab{
-  background: #444;
-}
-
-
-.container{
-  padding: 30px;
-  min-height: 60vh;
-  position: relative; /* важно для анимации */
-  background: rgba(255,255,255,0.75);
-  border-radius: 12px;
-
-
-}
-
-/* Плавные переходы между вкладками */
-.page{
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  opacity: 0;
-  transform: translateY(12px);
-  pointer-events: none; /* нельзя кликать по скрытым */
-  transition: opacity .35s ease, transform .35s ease;
-}
-
-/* Активная вкладка */
-.page.active{
-  opacity: 1;
-  transform: translateY(0);
-  pointer-events: auto;
-  position: relative; /* чтобы блок занимал место по высоте */
-}
-
-    .catalog {
-      display: flex;
-      gap: 20px;
+      padding: 6px;
       flex-wrap: wrap;
     }
 
-    .card {
-  background: white;
-  padding: 15px;
-  width: 200px;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
-  text-align: center;
-
-  cursor: pointer;
-  transition: transform .25s ease, box-shadow .25s ease;
-}
-
-
-    .card:hover{
-  transform: translateY(-6px) scale(1.03);
-  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-}
-
-
-    .card img {
-      width: 100%;
-      height: 70%;
-      object-fit: cover;
-      border-radius: 6px;
-    }
-
-    #product img {
-      max-width: 320px;
-      width: 100%;
+    nav button{
+      background: none;
+      border: none;
+      color: #fff;
+      padding: 12px 18px;
+      cursor: pointer;
+      font-size: 16px;
+      position: relative;
       border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.15);
-      margin-bottom: 15px;
+      transition: background .2s ease, color .2s ease;
+    }
+    nav button:hover{ background: rgba(255,255,255,0.12); }
+    nav button.activeTab{ background: rgba(255,255,255,0.16); }
+
+    nav button::after{
+      content:"";
+      position:absolute;
+      left: 20%;
+      bottom: 6px;
+      width: 60%;
+      height: 2px;
+      opacity: 0;
+      transform: scaleX(0);
+      background: var(--accent);
+      transition: .25s ease;
+      border-radius: 999px;
+    }
+    nav button:hover::after{
+      opacity: 1;
+      transform: scaleX(1);
     }
 
-    #cart-list {
-      list-style: none;
-      padding: 0;
-      margin: 0;
+    .navRight{
+      margin-left: auto;
+      background: rgba(255,255,255,0.10);
     }
 
-    #cart-list li {
-      background: white;
-      margin: 10px 0;
-      padding: 10px;
-      border-radius: 6px;
-      box-shadow: 0 0 8px rgba(0,0,0,0.08);
+    .container{
+      margin: 16px auto 0;
+      width: min(1100px, calc(100% - 24px));
+      padding: 18px;
+      min-height: 60vh;
+      position: relative;
+      background: var(--card-bg);
+      border-radius: 12px;
+      box-shadow: var(--shadow);
     }
 
-    footer {
+    /* tabs animation */
+    .page{
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      opacity: 0;
+      transform: translateY(12px);
+      pointer-events: none;
+      transition: opacity .35s ease, transform .35s ease;
+    }
+    .page.active{
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+      position: relative;
+    }
+
+    footer{
       background: #111;
-      color: white;
+      color: #fff;
       text-align: center;
       padding: 15px;
       margin-top: 30px;
     }
 
-    .btn {
+    /* =======================
+       3) UI elements
+    ======================== */
+    .btn{
       padding: 10px 16px;
       border: none;
-      border-radius: 6px;
+      border-radius: 10px;
       cursor: pointer;
-      background: #222;
+      font-weight: 600;
+      background: var(--accent);
       color: #fff;
+      transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
+    }
+    .btn:hover{
+      background: var(--accent-2);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    }
+    .btn.ghost{
+      background: rgba(255,255,255,0.14);
+      color: inherit;
+      border: 1px solid rgba(255,255,255,0.18);
+      box-shadow: none;
+    }
+    body.light .btn.ghost{
+      background: rgba(0,0,0,0.06);
+      border-color: rgba(0,0,0,0.12);
+    }
+
+    .accent{
+      color: #fff;
+      background: var(--accent);
+      padding: 2px 10px;
+      border-radius: 999px;
+    }
+
+    /* =======================
+       4) Home / Hero
+    ======================== */
+    .hero{
+      display: grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap: 24px;
+      align-items: start;
+    }
+    .hero-text{
+      font-size: 16px;
+      line-height: 1.55;
+      margin-top: 10px;
+      max-width: 560px;
+      opacity: .95;
+    }
+    .hero-actions{
+      margin-top: 18px;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .badges{
+      margin-top: 14px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .badge{
+      background: rgba(255,255,255,0.10);
+      border: 1px solid rgba(255,255,255,0.18);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 13px;
+    }
+    body.light .badge{
+      background: rgba(0,0,0,0.06);
+      border-color: rgba(0,0,0,0.12);
+    }
+
+    .hero-card{
+      background: rgba(255,255,255,0.10);
+      border: 1px solid rgba(255,255,255,0.18);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-radius: 18px;
+      padding: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+    body.light .hero-card{
+      background: rgba(0,0,0,0.05);
+      border-color: rgba(0,0,0,0.10);
+    }
+
+    .mini-grid{
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .mini{
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      padding: 10px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.10);
+      cursor: pointer;
+    }
+    body.light .mini{ background: rgba(0,0,0,0.06); }
+    .mini:hover{ transform: translateY(-2px); }
+    .mini img{
+      width: 46px;
+      height: 46px;
+      border-radius: 12px;
+      object-fit: cover;
+    }
+    .mini small{ display: block; opacity: .75; margin-top: 2px; }
+
+    .miniBtn{ width: 100%; margin-top: 12px; }
+
+    .features{
+      margin-top: 22px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+    .feature{
+      background: rgba(255,255,255,0.10);
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 16px;
+      padding: 14px;
+    }
+    body.light .feature{
+      background: rgba(0,0,0,0.05);
+      border-color: rgba(0,0,0,0.10);
+    }
+    .feature p{ margin: 0; opacity: .9; font-size: 14px; line-height: 1.45; }
+
+    /* =======================
+       5) Catalog / Cards
+    ======================== */
+    .catalog{
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .card{
+      background: rgba(255,255,255,0.10);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 15px;
+      width: 200px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.12);
+      text-align: center;
+      cursor: pointer;
+    }
+    body.light .card{
+      background: #fff;
+      border-color: rgba(0,0,0,0.10);
+    }
+    .card:hover{
+      transform: translateY(-6px) scale(1.03);
+      box-shadow: 0 12px 30px rgba(0,0,0,0.18);
+    }
+    .card img{
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+      border-radius: 10px;
+    }
+
+    /* =======================
+       6) Product
+    ======================== */
+    #product img{
+      max-width: 320px;
+      width: 100%;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.18);
+      margin-bottom: 15px;
+    }
+
+    /* =======================
+       7) Cart
+    ======================== */
+    #cart-list{
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      gap: 10px;
+    }
+    #cart-list li{
+      background: rgba(255,255,255,0.10);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 10px;
+      border-radius: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+    body.light #cart-list li{
+      background: #fff;
+      border-color: rgba(0,0,0,0.10);
+    }
+    .cart-actions{
+      margin-top: 12px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .removeItemBtn{
+      border: none;
+      border-radius: 10px;
+      padding: 6px 10px;
+      cursor: pointer;
+      background: rgba(239,68,68,0.16);
+      color: #ef4444;
+      font-weight: 700;
+    }
+    body.light .removeItemBtn{
+      background: rgba(239,68,68,0.10);
+    }
+
+    /* =======================
+       8) Orders
+    ======================== */
+    #ordersList{ margin: 16px 0; display: grid; gap: 12px; }
+
+    .orderCard{
+      background: rgba(255,255,255,0.10);
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 14px;
+      padding: 14px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.10);
+    }
+    body.light .orderCard{
+      background: #fff;
+      border-color: rgba(0,0,0,0.10);
+    }
+    .orderHead{
+      display:flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+    }
+    .orderItems{
+      margin-top: 8px;
+      opacity: .95;
+      font-size: 14px;
+      line-height: 1.45;
+    }
+    .orderMeta{
+      margin-top: 8px;
+      opacity: .85;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .orderActions{
+      margin-top: 10px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+    .dangerBtn{
+      background: rgba(239,68,68,0.18);
+      color: #ef4444;
+    }
+    .dangerBtn:hover{
+      background: rgba(239,68,68,0.28);
+    }
+
+    /* =======================
+       9) Theme switch panel
+    ======================== */
+    .theme-switch{
+      position: fixed;
+      right: 16px;
+      bottom: 16px;
+      z-index: 9998;
+      background: rgba(255,255,255,0.75);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.35);
+      padding: 10px 12px;
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #111;
+      max-width: calc(100vw - 24px);
+    }
+    .theme-dots{ display:flex; gap: 8px; }
+    .theme-dot{
+      width: 16px; height: 16px;
+      border-radius: 999px;
+      border: 2px solid rgba(0,0,0,0.15);
+      cursor: pointer;
+    }
+    .theme-dot.red{ background: #ef4444; }
+    .theme-dot.blue{ background: #3b82f6; }
+    .theme-dot.orange{ background: #f97316; }
+    .theme-dot.purple{ background: #8b5cf6; }
+
+    .mode-btn{
+      margin-left: 6px;
+      padding: 6px 10px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      background: rgba(0,0,0,0.15);
+    }
+
+    /* =======================
+       10) Loader
+    ======================== */
+    #loader{
+      position: fixed;
+      inset: 0;
+      background:
+        linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
+        url("https://i.pinimg.com/1200x/d9/41/23/d94123a5ed0203b5c46b2666aea14fde.jpg") center / cover no-repeat;
+      z-index: 9999;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: opacity .6s ease, visibility .6s ease;
+    }
+    #loader.hide{ opacity: 0; visibility: hidden; }
+
+    .loader-content{ text-align: center; color: white; }
+    .spinner{
+      width: 70px; height: 70px;
+      border: 4px solid rgba(255,255,255,.2);
+      border-top: 4px solid white;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto;
+    }
+    @keyframes spin{ to { transform: rotate(360deg); } }
+
+    /* =======================
+       11) Modals (Auth / Pay)
+    ======================== */
+    .overlay{
+      position: fixed;
+      inset: 0;
+      z-index: 10000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(0,0,0,0.65);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+    }
+    .overlay.show{ display: flex; }
+
+    .modalBox{
+      width: 100%;
+      max-width: 560px;
+      border-radius: 18px;
+      padding: 18px;
+      background: rgba(255,255,255,0.92);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+      color: #111;
+    }
+    body.dark .modalBox{
+      background: rgba(20,20,20,0.92);
+      color: #f3f3f3;
+    }
+
+    .modalHeader{
+      display:flex;
+      align-items:center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .modalHeader h3{ margin:0; }
+    .modalHeader small{ opacity:.7; }
+
+    .row{ margin-top: 10px; }
+    .row label{ display:block; font-size: 13px; opacity:.85; margin-bottom:6px; }
+
+    .row input, .row select{
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(0,0,0,0.15);
+      outline: none;
       font-size: 14px;
     }
-
-    .btn:hover {
-      background: #444;
+    body.dark .row input, body.dark .row select{
+      background: rgba(0,0,0,0.25);
+      border-color: rgba(255,255,255,0.18);
+      color: #fff;
     }
-    nav button{
-  position: relative;
-  transition: background .2s ease, color .2s ease;
-}
 
-/* линия снизу при наведении */
-nav button::after{
-  content:"";
-  position:absolute;
-  left: 20%;
-  bottom: 8px;
-  width: 60%;
-  height: 2px;
-  opacity: 0;
-  transform: scaleX(0);
-  background: #fff;
-  transition: .25s ease;
-}
-
-nav button:hover::after{
-  opacity: 1;
-  transform: scaleX(1);
-}
-
-/* ===== Экран загрузки ===== */
-#loader{
-  position: fixed;
-  inset: 0;
-  background:
-    linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
-    url("https://i.pinimg.com/1200x/d9/41/23/d94123a5ed0203b5c46b2666aea14fde.jpg") center / cover no-repeat;
-  z-index: 9999;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  transition: opacity .6s ease, visibility .6s ease;
-}
-
-
-#loader.hide{
-  opacity: 0;
-  visibility: hidden;
-}
-
-.loader-content{
-  text-align: center;
-  color: white;
-  animation: fadeIn .8s ease;
-}
-
-.loader-content h1{
-  margin-top: 20px;
-  letter-spacing: 2px;
-}
-
-.loader-content p{
-  opacity: .7;
-  margin-top: 5px;
-}
-
-/* Кольцо */
-.spinner{
-  width: 70px;
-  height: 70px;
-  border: 4px solid rgba(255,255,255,.2);
-  border-top: 4px solid white;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin: 0 auto;
-}
-
-/* Анимации */
-@keyframes spin{
-  to { transform: rotate(360deg); }
-}
-
-@keyframes fadeIn{
-  from { opacity: 0; transform: scale(.95); }
-  to { opacity: 1; transform: scale(1); }
-}
-
-/* Фон на весь экран */
-body::before{
-  content: "";
-  position: fixed;
-  inset: 0;
-  background: 
-    linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.7)),
-    url("https://i.pinimg.com/736x/9f/79/63/9f796349f7fff04530cf20b146dd10da.jpg") center / cover no-repeat;
-  z-index: -1;
-}
-
-/* ===== Улучшенная главная ===== */
-.hero{
-  display: grid;
-  grid-template-columns: 1.2fr .8fr;
-  gap: 24px;
-  align-items: start;
-}
-
-.accent{
-  color: #111;
-  background: rgba(255,255,255,0.55);
-  padding: 2px 10px;
-  border-radius: 999px;
-}
-
-.hero-text{
-  font-size: 16px;
-  line-height: 1.55;
-  margin-top: 10px;
-  max-width: 560px;
-}
-
-.hero-actions{
-  margin-top: 18px;
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.btn{
-  padding: 10px 16px;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  font-weight: 600;
-  transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
-}
-
-.btn:hover{
-  transform: translateY(-2px);
-  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-}
-
-.btn.primary{
-  background: #111;
-  color: #fff;
-}
-
-.btn.ghost{
-  background: rgba(255,255,255,0.45);
-  color: #111;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(0,0,0,0.08);
-}
-
-.badges{
-  margin-top: 14px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.badge{
-  background: rgba(255,255,255,0.35);
-  border: 1px solid rgba(255,255,255,0.35);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  padding: 6px 10px;
-  border-radius: 999px;
-  font-size: 13px;
-}
-
-.hero-card{
-  background: rgba(255,255,255,0.35);
-  border: 1px solid rgba(255,255,255,0.35);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-radius: 18px;
-  padding: 16px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-}
-
-.hero-card h3{
-  margin: 0 0 6px 0;
-}
-
-.hero-card p{
-  margin: 0 0 14px 0;
-  opacity: .8;
-  font-size: 14px;
-}
-
-.mini-grid{
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-}
-
-.mini{
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  padding: 10px;
-  border-radius: 14px;
-  background: rgba(255,255,255,0.35);
-  cursor: pointer;
-  transition: transform .2s ease, background .2s ease;
-}
-
-.mini:hover{
-  transform: translateY(-2px);
-  background: rgba(255,255,255,0.5);
-}
-
-.mini img{
-  width: 46px;
-  height: 46px;
-  border-radius: 12px;
-  object-fit: cover;
-}
-
-.mini small{
-  display: block;
-  opacity: .75;
-  margin-top: 2px;
-}
-
-.miniBtn{
-  width: 100%;
-  margin-top: 12px;
-  background: rgba(17,17,17,0.9);
-  color: #fff;
-}
-
-.features{
-  margin-top: 22px;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-}
-
-.feature{
-  background: rgba(255,255,255,0.30);
-  border: 1px solid rgba(255,255,255,0.35);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-radius: 16px;
-  padding: 14px;
-}
-
-.feature h4{
-  margin: 0 0 6px 0;
-}
-
-.feature p{
-  margin: 0;
-  opacity: .8;
-  font-size: 14px;
-  line-height: 1.45;
-}
-
-/* Адаптация под телефон */
-@media (max-width: 900px){
-  .hero{ grid-template-columns: 1fr; }
-  .features{ grid-template-columns: 1fr; }
-}
-/* ===== THEMES (ставь В САМЫЙ НИЗ style) ===== */
-:root{
-  --accent: #8b5cf6;
-  --accent-2: #7c3aed;
-  --header-bg: #111;
-  --nav-bg: #222;
-  --surface: rgba(255,255,255,0.75);
-  --text: #111;
-}
-
-/* ВАЖНО: !important чтобы перебить твои старые правила ниже/выше */
-header{ background: var(--header-bg) !important; }
-nav{ background: var(--nav-bg) !important; }
-
-.accent{
-  color:#fff !important;
-  background: var(--accent) !important;
-}
-
-nav button::after{ background: var(--accent) !important; }
-
-.btn{ background: var(--accent) !important; color:#fff !important; }
-.btn:hover{ background: var(--accent-2) !important; }
-
-.btn.primary{ background: var(--accent) !important; }   /* вот это было #111 */
-.miniBtn{ background: var(--accent) !important; }        /* у тебя было rgba(17,17,17,0.9) */
-
-.container{ background: var(--surface) !important; }
-
-
-/* ===== LIGHT / DARK MODE ===== */
-:root{
-  --bg-overlay: linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.7));
-  --text-main: #111;
-  --card-bg: rgba(255,255,255,0.9);
-}
-
-/* светлая тема */
-body.light{
-  --bg-overlay: linear-gradient(rgba(255,255,255,0.65), rgba(255,255,255,0.85));
-  --text-main: #111;
-  --card-bg: #ffffff;
-}
-
-/* тёмная тема */
-body.dark{
-  --bg-overlay: linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.85));
-  --text-main: #f3f3f3;
-  --card-bg: rgba(25,25,25,0.95);
-}
-
-/* применяем */
-body::before{
-  background:
-    var(--bg-overlay),
-    url("https://i.pinimg.com/736x/9f/79/63/9f796349f7fff04530cf20b146dd10da.jpg")
-    center / cover no-repeat !important;
-}
-
-body{
-  color: var(--text-main) !important;
-}
-
-.card,
-.hero-card,
-.feature,
-.container{
-  background: var(--card-bg) !important;
-  color: var(--text-main) !important;
-}
-
-header,
-footer{
-  color: #fff !important;
-}
-
-.mode-btn{
-  margin-left: 6px;
-  padding: 6px 10px;
-  border-radius: 10px;
-  border: none;
-  cursor: pointer;
-  font-size: 16px;
-  background: rgba(0,0,0,0.15);
-}
-
-/* ===== AUTH MODAL ===== */
-#authOverlay{
-  position: fixed;
-  inset: 0;
-  z-index: 10000;
-  display: none; /* показываем через JS */
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  background: rgba(0,0,0,0.65);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-}
-
-#authOverlay.show{ display: flex; }
-
-.authBox{
-  width: 100%;
-  max-width: 420px;
-  border-radius: 18px;
-  padding: 18px;
-  background: rgba(255,255,255,0.92);
-  box-shadow: 0 20px 60px rgba(0,0,0,0.35);
-}
-
-body.dark #authOverlay .authBox{
-  background: rgba(20,20,20,0.92);
-  color: #f3f3f3;
-}
-
-.authHeader{
-  display:flex;
-  align-items:center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 12px;
-}
-
-.authHeader h3{ margin:0; }
-.authHeader small{ opacity:.7; }
-
-.authRow{ margin-top: 10px; }
-.authRow label{ display:block; font-size: 13px; opacity:.8; margin-bottom:6px; }
-
-.authRow input{
-  width: 100%;
-  padding: 10px 12px;
-  border-radius: 10px;
-  border: 1px solid rgba(0,0,0,0.15);
-  outline: none;
-  font-size: 14px;
-}
-
-body.dark .authRow input{
-  background: rgba(0,0,0,0.25);
-  border-color: rgba(255,255,255,0.18);
-  color: #fff;
-}
-
-.authActions{
-  margin-top: 14px;
-  display:flex;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.authNote{
-  margin-top: 10px;
-  font-size: 12px;
-  opacity: .75;
-}
-
-.authError{
-  margin-top: 10px;
-  color: #ef4444;
-  font-size: 13px;
-  display:none;
-}
-.authError.show{ display:block; }
-
-.authSmallBtn{
-  background: rgba(0,0,0,0.10);
-  color: inherit;
-}
-body.dark .authSmallBtn{
-  background: rgba(255,255,255,0.12);
-}
-
-html, body{
-  width: 100%;
-  overflow-x: hidden;  /* убирает горизонтальную прокрутку */
-}
-
-/* Чтобы фикс-панель темы не вызывала лишнюю ширину */
-.theme-switch{
-  max-width: calc(100vw - 24px);
-}
-
-/* ===== RESPONSIVE (телефон/планшет) ===== */
-
-/* Планшеты */
-@media (max-width: 1024px){
-  .container{
-    padding: 18px;
-  }
-
-  nav{
-    gap: 6px;
-    padding: 6px;
-    flex-wrap: wrap;          /* меню переносится */
-  }
-
-  nav button{
-    padding: 12px 16px;
-    font-size: 15px;
-  }
-
-  .catalog{
-    gap: 14px;
-  }
-
-  .card{
-    width: 190px;
-  }
-}
-
-/* Телефоны */
-@media (max-width: 600px){
-  header{
-    padding: 14px 12px;
-  }
-
-  header h1{
-    margin: 0;
-    font-size: 22px;
-  }
-
-  nav{
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 6px;
-    padding: 8px;
-  }
-
-  nav button{
-    padding: 10px 12px;
-    font-size: 14px;
-    border-radius: 10px;
-    background: rgba(255,255,255,0.06); /* чтобы кнопки лучше читались на мобиле */
-  }
-
-  .container{
-    padding: 14px;
-    border-radius: 12px;
-  }
-
-  /* hero уже у тебя в 1 колонку при 900px, но на телефоне сделаем плотнее */
-  .hero{
-    gap: 14px;
-  }
-
-  .hero-text{
-    font-size: 14px;
-  }
-
-  /* каталог: карточки на всю ширину в 2 колонки или 1 */
-  .catalog{
-    gap: 12px;
-  }
-
-  .card{
-    width: calc(50% - 6px); /* две колонки */
-    padding: 12px;
-  }
-
-  /* если экран очень узкий — 1 колонка */
-  @media (max-width: 420px){
-    .card{ width: 100%; }
-  }
-
-  /* картинки в карточках фиксируем по высоте, чтобы не "прыгало" */
-  .card img{
-    height: 160px;
-    object-fit: cover;
-  }
-
-  /* страница товара */
-  #product img{
-    max-width: 100%;
-  }
-
-  /* панель темы поднимаем выше, чтобы не перекрывала кнопки/контент */
-  .theme-switch{
-    right: 10px;
-    bottom: 10px;
-    padding: 8px 10px;
-    gap: 8px;
-    border-radius: 14px;
-    transform: scale(0.95);
-    transform-origin: bottom right;
-  }
-}
-
-
+    .grid2{
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .chips{
+      display:flex;
+      gap:10px;
+      flex-wrap: wrap;
+    }
+    .chip{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      background: rgba(0,0,0,0.06);
+      cursor:pointer;
+      user-select:none;
+    }
+    body.dark .chip{ background: rgba(255,255,255,0.08); }
+
+    .sumBox{
+      margin: 10px 0 14px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: rgba(0,0,0,0.06);
+    }
+    body.dark .sumBox{ background: rgba(255,255,255,0.08); }
+
+    .sumLine{
+      display:flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin: 6px 0;
+    }
+
+    .actions{
+      margin-top: 14px;
+      display:flex;
+      gap:10px;
+      justify-content:flex-end;
+      flex-wrap:wrap;
+    }
+
+    .hint{ margin-top: 6px; font-size: 12px; opacity: .75; }
+
+    .error{
+      margin-top: 10px;
+      color: #ef4444;
+      font-size: 13px;
+      display:none;
+    }
+    .error.show{ display:block; }
+
+    /* =======================
+       12) Responsive
+    ======================== */
+    @media (max-width: 900px){
+      .hero{ grid-template-columns: 1fr; }
+      .features{ grid-template-columns: 1fr; }
+    }
+    @media (max-width: 600px){
+      header{ padding: 14px 12px; }
+      header h1{ margin: 0; font-size: 22px; }
+      nav button{ padding: 10px 12px; font-size: 14px; }
+      .container{ padding: 14px; }
+
+      .catalog{ gap: 12px; }
+      .card{ width: calc(50% - 6px); padding: 12px; }
+    }
+    @media (max-width: 420px){
+      .card{ width: 100%; }
+    }
   </style>
 </head>
 
 <body>
-    <!-- Окно авторизации -->
-<div id="authOverlay">
-  <div class="authBox">
-    <div class="authHeader">
-      <div>
-        <h3>Вход в Anime Store</h3>
-        <small>Введите логин и пароль</small>
-      </div>
-      <button class="btn authSmallBtn" type="button" onclick="logout()" title="Сбросить вход">↺</button>
+
+  <!-- Loader -->
+  <div id="loader">
+    <div class="loader-content">
+      <div class="spinner"></div>
+      <h1>Anime Store</h1>
+      <p>Загрузка...</p>
     </div>
-
-    <div class="authRow">
-      <label for="authLogin">Логин</label>
-      <input id="authLogin" type="text" placeholder="например: admin">
-    </div>
-
-    <div class="authRow">
-      <label for="authPass">Пароль</label>
-      <input id="authPass" type="password" placeholder="например: 1234">
-    </div>
-
-    <div class="authActions">
-      <button class="btn primary" type="button" onclick="login()">Войти</button>
-      <button class="btn ghost" type="button" onclick="fillDemo()">Демо</button>
-    </div>
-
-    <div id="authError" class="authError">Неверный логин или пароль.</div>
-    <div class="authNote">*Это фронтенд-авторизация (без сервера). Для реальной — нужен backend.</div>
-  </div>
-</div>
-
-
-    
-
-    <!-- Переключатель темы -->
-<div class="theme-switch">
-  <b>Тема:</b>
-  <div class="theme-dots">
-    <button class="theme-dot red"    type="button" aria-label="Красная"  onclick="setTheme('red')"></button>
-    <button class="theme-dot blue"   type="button" aria-label="Синяя"    onclick="setTheme('blue')"></button>
-    <button class="theme-dot orange" type="button" aria-label="Оранжевая" onclick="setTheme('orange')"></button>
-    <button class="theme-dot purple" type="button" aria-label="Фиолетовая" onclick="setTheme('purple')"></button>
-  </div>
-</div>
-
-<div class="theme-switch">
-  <b>Тема:</b>
-
-  <div class="theme-dots">
-    <button class="theme-dot red"    onclick="setTheme('red')"></button>
-    <button class="theme-dot blue"   onclick="setTheme('blue')"></button>
-    <button class="theme-dot orange" onclick="setTheme('orange')"></button>
-    <button class="theme-dot purple" onclick="setTheme('purple')"></button>
   </div>
 
-  <button class="mode-btn" onclick="toggleMode()">🌙</button>
-</div>
-
-    <!-- Экран загрузки -->
-<div id="loader">
-  <div class="loader-content">
-    <div class="spinner"></div>
-    <h1>Anime Store</h1>
-    <p>Загрузка...</p>
-  </div>
-</div>
-
-
-<header>
-  <h1><p style="font-size:22px; font-weight:bold;">
-  <span style="color:red;">А</span>
-  <span style="color:orange;">н</span>
-  <span style="color:gold;">и</span>
-  <span style="color:green;">м</span>
-  <span style="color:turquoise;">е</span>
-  <span style="color:blue;"> </span>
-  <span style="color:indigo;">S</span>
-  <span style="color:purple;">t</span>
-  <span style="color:deeppink;">o</span>
-  <span style="color:brown;">r</span>
-  <span style="color:darkcyan;">e</span>
-</p>
-</h1>
-  <p>Интернет-магазин аниме фигурок</p>
-</header>
-
-<nav>
-  <button onclick="showPage('home')">Главная</button>
-  <button onclick="showPage('catalogPage')">Каталог</button>
-  <button onclick="showPage('cart')">Корзина</button>
-  <button onclick="showPage('about')">О нас</button>
-</nav>
-
-<div class="container">
-
-  <!-- Главная -->
-  <div id="home" class="page active">
-  <section class="hero">
-    <div class="hero-left">
-      <h2>Добро пожаловать в <span class="accent">Anime Store</span>!</h2>
-      <p class="hero-text">
-        Магазин коллекционных аниме-фигурок: культовые персонажи, качественная детализация
-        и крутые подарки для фанатов.
-      </p>
-
-      <div class="hero-actions">
-        <button class="btn primary" onclick="showPage('catalogPage')">Перейти в каталог</button>
-        <button class="btn ghost" onclick="showPage('about')">О магазине</button>
+  <!-- AUTH -->
+  <div id="authOverlay" class="overlay">
+    <div class="modalBox">
+      <div class="modalHeader">
+        <div>
+          <h3>Вход в Anime Store</h3>
+          <small>Введите логин и пароль</small>
+        </div>
+        <button class="btn ghost" type="button" onclick="logout()" title="Сбросить вход">↺</button>
       </div>
 
-      <div class="badges">
-        <span class="badge">Главные ариимущества:</span>
-        <span class="badge">⭐ Качество</span>
-        <span class="badge">📦 Упаковка</span>
-        <span class="badge">🚚 Быстрая доставка</span>
-        <span class="badge">🎁 Идея для подарка</span>
+      <div class="row">
+        <label for="authLogin">Логин</label>
+        <input id="authLogin" type="text" placeholder="например: admin" />
       </div>
+
+      <div class="row">
+        <label for="authPass">Пароль</label>
+        <input id="authPass" type="password" placeholder="например: 1234" />
+      </div>
+
+      <div class="actions" style="justify-content:flex-start;">
+        <button class="btn" type="button" onclick="login()">Войти</button>
+        <button class="btn ghost" type="button" onclick="fillDemo()">Демо</button>
+      </div>
+
+      <div id="authError" class="error">Неверный логин или пароль.</div>
+      <div class="hint">*Это фронтенд-авторизация (без сервера). Для реальной — нужен backend.</div>
     </div>
+  </div>
 
-    <div class="hero-right">
-      <div class="hero-card">
-        <h3>Топ-популярное</h3>
-        <p>Нажми на персонажа — откроется карточка товара.</p>
+  <!-- Theme Switch -->
+  <div class="theme-switch">
+    <b>Тема:</b>
+    <div class="theme-dots">
+      <button class="theme-dot red" type="button" aria-label="Красная" onclick="setTheme('red')"></button>
+      <button class="theme-dot blue" type="button" aria-label="Синяя" onclick="setTheme('blue')"></button>
+      <button class="theme-dot orange" type="button" aria-label="Оранжевая" onclick="setTheme('orange')"></button>
+      <button class="theme-dot purple" type="button" aria-label="Фиолетовая" onclick="setTheme('purple')"></button>
+    </div>
+    <button class="mode-btn" type="button" onclick="toggleMode()">🌙</button>
+  </div>
 
-        <div class="mini-grid">
-          <div class="mini" onclick="openProduct('Naruto','https://i.pinimg.com/736x/de/97/79/de9779f6bcb1772a7e46e09c252052c8.jpg','Фигурка Наруто Узумаки из аниме Naruto.','2500 ₽')">
-            <img src="https://i.pinimg.com/736x/de/97/79/de9779f6bcb1772a7e46e09c252052c8.jpg" alt="Naruto">
-            <div>
-              <b>Naruto</b>
-              <small>2500 ₽</small>
-            </div>
+  <header>
+    <h1 style="margin:0;">Anime Store</h1>
+    <p style="margin:6px 0 0;">Интернет-магазин аниме фигурок</p>
+  </header>
+
+  <nav>
+    <button onclick="showPage('home')">Главная</button>
+    <button onclick="showPage('catalogPage')">Каталог</button>
+    <button onclick="showPage('cart')">Корзина</button>
+    <button onclick="showPage('about')">О нас</button>
+    <button onclick="showPage('orders')">Заказы</button>
+    <button class="navRight" onclick="logout()" title="Выйти из аккаунта">Выйти</button>
+  </nav>
+
+  <div class="container">
+
+    <!-- HOME -->
+    <div id="home" class="page active">
+      <section class="hero">
+        <div class="hero-left">
+          <h2>Добро пожаловать в <span class="accent">Anime Store</span>!</h2>
+          <p class="hero-text">
+            Магазин коллекционных аниме-фигурок: культовые персонажи, качественная детализация
+            и крутые подарки для фанатов.
+          </p>
+
+          <div class="hero-actions">
+            <button class="btn" onclick="showPage('catalogPage')">Перейти в каталог</button>
+            <button class="btn ghost" onclick="showPage('about')">О магазине</button>
           </div>
 
-          <div class="mini" onclick="openProduct('Gojo Satoru','https://i.pinimg.com/736x/4b/a8/7c/4ba87cc0815a34837d21f560bcfcb694.jpg','Коллекционная фигурка из аниме «Jujutsu Kaisen».','3200 ₽')">
-            <img src="https://i.pinimg.com/736x/4b/a8/7c/4ba87cc0815a34837d21f560bcfcb694.jpg" alt="Gojo Satoru">
-            <div>
-              <b>Gojo</b>
-              <small>3200 ₽</small>
-            </div>
-          </div>
-
-          <div class="mini" onclick="openProduct('Luffy','https://i.pinimg.com/1200x/2d/0f/6f/2d0f6f2e5e09cac2448aad5bb55d48d8.jpg','Фигурка Монки Д. Луффи из One Piece.','2800 ₽')">
-            <img src="https://i.pinimg.com/1200x/2d/0f/6f/2d0f6f2e5e09cac2448aad5bb55d48d8.jpg" alt="Luffy">
-            <div>
-              <b>Luffy</b>
-              <small>2800 ₽</small>
-            </div>
-          </div>
-
-          <div class="mini" onclick="openProduct('Eren Yeager','https://i.pinimg.com/1200x/3c/cc/1d/3ccc1dc40eb3a8310994e512b0583210.jpg','Фигурка Эрена Йегера из «Атаки титанов».','3000 ₽')">
-            <img src="https://i.pinimg.com/1200x/3c/cc/1d/3ccc1dc40eb3a8310994e512b0583210.jpg" alt="Eren Yeager">
-            <div>
-              <b>Eren</b>
-              <small>3000 ₽</small>
-            </div>
+          <div class="badges">
+            <span class="badge">Главные преимущества:</span>
+            <span class="badge">⭐ Качество</span>
+            <span class="badge">📦 Упаковка</span>
+            <span class="badge">🚚 Быстрая доставка</span>
+            <span class="badge">🎁 Идея для подарка</span>
           </div>
         </div>
 
-        <button class="btn miniBtn" onclick="showPage('catalogPage')">Смотреть все товары</button>
+        <div class="hero-right">
+          <div class="hero-card">
+            <h3 style="margin:0 0 6px;">Топ-популярное</h3>
+            <p style="margin:0 0 14px; opacity:.85;">Нажми на персонажа — откроется карточка товара.</p>
+
+            <div class="mini-grid">
+              <div class="mini" onclick="openProduct('Naruto','https://i.pinimg.com/736x/de/97/79/de9779f6bcb1772a7e46e09c252052c8.jpg','Фигурка Наруто Узумаки из аниме Naruto.','2500 ₽')">
+                <img src="https://i.pinimg.com/736x/de/97/79/de9779f6bcb1772a7e46e09c252052c8.jpg" alt="Naruto">
+                <div><b>Naruto</b><small>2500 ₽</small></div>
+              </div>
+
+              <div class="mini" onclick="openProduct('Gojo Satoru','https://i.pinimg.com/736x/4b/a8/7c/4ba87cc0815a34837d21f560bcfcb694.jpg','Коллекционная фигурка из аниме «Jujutsu Kaisen».','3200 ₽')">
+                <img src="https://i.pinimg.com/736x/4b/a8/7c/4ba87cc0815a34837d21f560bcfcb694.jpg" alt="Gojo">
+                <div><b>Gojo</b><small>3200 ₽</small></div>
+              </div>
+
+              <div class="mini" onclick="openProduct('Luffy','https://i.pinimg.com/1200x/2d/0f/6f/2d0f6f2e5e09cac2448aad5bb55d48d8.jpg','Фигурка Монки Д. Луффи из One Piece.','2800 ₽')">
+                <img src="https://i.pinimg.com/1200x/2d/0f/6f/2d0f6f2e5e09cac2448aad5bb55d48d8.jpg" alt="Luffy">
+                <div><b>Luffy</b><small>2800 ₽</small></div>
+              </div>
+
+              <div class="mini" onclick="openProduct('Eren Yeager','https://i.pinimg.com/1200x/3c/cc/1d/3ccc1dc40eb3a8310994e512b0583210.jpg','Фигурка Эрена Йегера из «Атаки титанов».','3000 ₽')">
+                <img src="https://i.pinimg.com/1200x/3c/cc/1d/3ccc1dc40eb3a8310994e512b0583210.jpg" alt="Eren">
+                <div><b>Eren</b><small>3000 ₽</small></div>
+              </div>
+            </div>
+
+            <button class="btn miniBtn" onclick="showPage('catalogPage')">Смотреть все товары</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="features">
+        <div class="feature">
+          <h4 style="margin:0 0 6px;">🛡️ Надёжная упаковка</h4>
+          <p>Фигурки приезжают целыми: защита, пупырка, аккуратная коробка.</p>
+        </div>
+        <div class="feature">
+          <h4 style="margin:0 0 6px;">✅ Качество и детализация</h4>
+          <p>Тщательно отбираем модели, чтобы они выглядели как в аниме.</p>
+        </div>
+        <div class="feature">
+          <h4 style="margin:0 0 6px;">🎁 Подарки фанатам</h4>
+          <p>Идеально на день рождения, новый год и просто “порадовать себя”.</p>
+        </div>
+      </section>
+    </div>
+
+    <!-- CATALOG -->
+    <div id="catalogPage" class="page">
+      <h2>Каталог</h2>
+      <div class="catalog">
+        <div class="card" onclick="openProduct('Naruto','https://i.pinimg.com/736x/de/97/79/de9779f6bcb1772a7e46e09c252052c8.jpg','Фигурка Наруто Узумаки из аниме Naruto.','2500 ₽')">
+          <img src="https://i.pinimg.com/736x/de/97/79/de9779f6bcb1772a7e46e09c252052c8.jpg" alt="Naruto">
+          <h3>Naruto</h3><p>Цена: 2500 ₽</p>
+        </div>
+
+        <div class="card" onclick="openProduct('Gojo Satoru','https://i.pinimg.com/736x/4b/a8/7c/4ba87cc0815a34837d21f560bcfcb694.jpg','Коллекционная фигурка из аниме «Jujutsu Kaisen».','3200 ₽')">
+          <img src="https://i.pinimg.com/736x/4b/a8/7c/4ba87cc0815a34837d21f560bcfcb694.jpg" alt="Gojo Satoru">
+          <h3>Gojo Satoru</h3><p>Цена: 3200 ₽</p>
+        </div>
+
+        <div class="card" onclick="openProduct('Luffy','https://i.pinimg.com/1200x/2d/0f/6f/2d0f6f2e5e09cac2448aad5bb55d48d8.jpg','Фигурка Монки Д. Луффи из One Piece.','2800 ₽')">
+          <img src="https://i.pinimg.com/1200x/2d/0f/6f/2d0f6f2e5e09cac2448aad5bb55d48d8.jpg" alt="Luffy">
+          <h3>Luffy</h3><p>Цена: 2800 ₽</p>
+        </div>
+
+        <div class="card" onclick="openProduct('Eren Yeager','https://i.pinimg.com/1200x/3c/cc/1d/3ccc1dc40eb3a8310994e512b0583210.jpg','Фигурка Эрена Йегера из «Атаки титанов».','3000 ₽')">
+          <img src="https://i.pinimg.com/1200x/3c/cc/1d/3ccc1dc40eb3a8310994e512b0583210.jpg" alt="Eren Yeager">
+          <h3>Eren Yeager</h3><p>Цена: 3000 ₽</p>
+        </div>
+
+        <div class="card" onclick="openProduct('Itachi Uchiha','https://i.pinimg.com/1200x/0d/7c/fb/0d7cfbc983aad8c520c335c04f85e40c.jpg','Фигурка Итачи Учихи из аниме Naruto Shippuden.','3100 ₽')">
+          <img src="https://i.pinimg.com/1200x/0d/7c/fb/0d7cfbc983aad8c520c335c04f85e40c.jpg" alt="Itachi">
+          <h3>Itachi Uchiha</h3><p>Цена: 3100 ₽</p>
+        </div>
+
+        <div class="card" onclick="openProduct('Levi Ackerman','https://i.pinimg.com/736x/dc/31/a9/dc31a95682b372be65164c47d6ca9060.jpg','Фигурка Леви Аккермана из «Атаки титанов».','3300 ₽')">
+          <img src="https://i.pinimg.com/736x/dc/31/a9/dc31a95682b372be65164c47d6ca9060.jpg" alt="Levi">
+          <h3>Levi Ackerman</h3><p>Цена: 3300 ₽</p>
+        </div>
       </div>
     </div>
-  </section>
 
-  <section class="features">
-    <div class="feature">
-      <h4>🛡️ Надёжная упаковка</h4>
-      <p>Фигурки приезжают целыми: защита, пупырка, аккуратная коробка.</p>
+    <!-- PRODUCT -->
+    <div id="product" class="page">
+      <h2>Карточка товара</h2>
+      <img id="product-img" src="" alt="Товар">
+      <h3 id="product-title"></h3>
+      <p id="product-desc"></p>
+      <p><b>Цена:</b> <span id="product-price"></span></p>
+      <button class="btn" onclick="addToCart()">Добавить в корзину</button>
+      <button class="btn ghost" onclick="showPage('catalogPage')" style="margin-left:10px;">Назад в каталог</button>
     </div>
-    <div class="feature">
-      <h4>✅ Качество и детализация</h4>
-      <p>Тщательно отбираем модели, чтобы они выглядели как в аниме.</p>
+
+    <!-- CART -->
+    <div id="cart" class="page">
+      <h2>Корзина</h2>
+      <ul id="cart-list"></ul>
+      <p><b>Итого:</b> <span id="total-price">0 ₽</span></p>
+
+      <div class="cart-actions">
+        <button class="btn ghost" onclick="clearCart()">Очистить корзину</button>
+        <button class="btn" onclick="openPay()">Оформить заказ</button>
+      </div>
     </div>
-    <div class="feature">
-      <h4>🎁 Подарки фанатам</h4>
-      <p>Идеально на день рождения, новый год и просто “порадовать себя”.</p>
+
+    <!-- ORDERS -->
+    <div id="orders" class="page">
+      <h2>Мои заказы</h2>
+      <p style="opacity:.8;">Заказы сохраняются в браузере (localStorage).</p>
+
+      <div id="ordersList"></div>
+
+      <button class="btn ghost" type="button" onclick="clearOrders()">Очистить историю</button>
     </div>
-  </section>
-</div>
 
+    <!-- ABOUT -->
+    <div id="about" class="page">
+      <h2>О нас</h2>
+      <p><b>Anime Store</b> — это не просто интернет-магазин, а место, созданное фанатами аниме для фанатов аниме.</p>
+      <p>Наша идея проста — <b>дать возможность каждому поклоннику японской анимации прикоснуться к любимым героям в реальной жизни</b>.</p>
 
-  <!-- Каталог -->
-  <div id="catalogPage" class="page">
-    <h2>Каталог</h2>
+      <h3>Что для нас важно</h3>
+      <ul>
+        <li><b>Качество материалов и покраски</b></li>
+        <li><b>Детализация</b></li>
+        <li><b>Надёжная упаковка</b></li>
+      </ul>
 
-    <div class="catalog">
-      <div class="card" onclick="openProduct(
-        'Naruto',
-        'https://i.pinimg.com/736x/de/97/79/de9779f6bcb1772a7e46e09c252052c8.jpg',
-        'Фигурка Наруто Узумаки из аниме Naruto.',
-        '2500 ₽'
-      )">
-        <img src="https://i.pinimg.com/736x/de/97/79/de9779f6bcb1772a7e46e09c252052c8.jpg" alt="Naruto">
-        <h3>Naruto</h3>
-        <p>Цена: 2500 ₽</p>
-      </div>
-
-      <div class="card" onclick="openProduct(
-        'Gojo Satoru',
-        'https://i.pinimg.com/736x/4b/a8/7c/4ba87cc0815a34837d21f560bcfcb694.jpg',
-        'Коллекционная фигурка из аниме «Jujutsu Kaisen».',
-        '3200 ₽'
-      )">
-        <img src="https://i.pinimg.com/736x/4b/a8/7c/4ba87cc0815a34837d21f560bcfcb694.jpg" alt="Gojo Satoru">
-        <h3>Gojo Satoru</h3>
-        <p>Цена: 3200 ₽</p>
-      </div>
-
-      <div class="card" onclick="openProduct(
-        'Luffy',
-        'https://i.pinimg.com/1200x/2d/0f/6f/2d0f6f2e5e09cac2448aad5bb55d48d8.jpg',
-        'Фигурка Монки Д. Луффи из One Piece.',
-        '2800 ₽'
-      )">
-        <img src="https://i.pinimg.com/1200x/2d/0f/6f/2d0f6f2e5e09cac2448aad5bb55d48d8.jpg" alt="Luffy">
-        <h3>Luffy</h3>
-        <p>Цена: 2800 ₽</p>
-      </div>
-
-      <div class="card" onclick="openProduct(
-        'Eren Yeager',
-        'https://i.pinimg.com/1200x/3c/cc/1d/3ccc1dc40eb3a8310994e512b0583210.jpg',
-        'Фигурка Эрена Йегера из «Атаки титанов».',
-        '3000 ₽'
-      )">
-        <img src="https://i.pinimg.com/1200x/3c/cc/1d/3ccc1dc40eb3a8310994e512b0583210.jpg" alt="Eren Yeager">
-        <h3>Eren Yeager</h3>
-        <p>Цена: 3000 ₽</p>
-      </div>
-
-      <div class="card" onclick="openProduct(
-  'Itachi Uchiha',
-  'https://i.pinimg.com/1200x/0d/7c/fb/0d7cfbc983aad8c520c335c04f85e40c.jpg',
-  'Фигурка Итачи Учихи из аниме Naruto Shippuden.',
-  '3100 ₽'
-)">
-  <img src="https://i.pinimg.com/1200x/0d/7c/fb/0d7cfbc983aad8c520c335c04f85e40c.jpg">
-  <h3>Itachi Uchiha</h3>
-  <p>Цена: 3100 ₽</p>
-</div>
-
-<div class="card" onclick="openProduct(
-  'Levi Ackerman',
-  'https://i.pinimg.com/736x/dc/31/a9/dc31a95682b372be65164c47d6ca9060.jpg',
-  'Фигурка Леви Аккермана из «Атаки титанов».',
-  '3300 ₽'
-)">
-  <img src="https://i.pinimg.com/736x/dc/31/a9/dc31a95682b372be65164c47d6ca9060.jpg">
-  <h3>Levi Ackerman</h3>
-  <p>Цена: 3300 ₽</p>
-</div>
-
-<div class="card" onclick="openProduct(
-  'Sasuke Uchiha',
-  'https://i.pinimg.com/736x/70/72/a5/7072a5ffd70b3678192ef8eca7f97de6.jpg',
-  'Фигурка Саске Учихи из аниме Naruto.',
-  '2900 ₽'
-)">
-  <img src="https://i.pinimg.com/736x/70/72/a5/7072a5ffd70b3678192ef8eca7f97de6.jpg">
-  <h3>Sasuke Uchiha</h3>
-  <p>Цена: 2900 ₽</p>
-</div>
-
-<div class="card" onclick="openProduct(
-  'Tanjiro Kamado',
-  'https://i.pinimg.com/736x/cd/6b/ed/cd6bed44912f6d01189da464e11d90fe.jpg',
-  'Фигурка Танджиро Камадо из Demon Slayer.',
-  '2700 ₽'
-)">
-  <img src="https://i.pinimg.com/736x/cd/6b/ed/cd6bed44912f6d01189da464e11d90fe.jpg">
-  <h3>Tanjiro Kamado</h3>
-  <p>Цена: 2700 ₽</p>
-</div>
-
-<div class="card" onclick="openProduct(
-  'Nezuko Kamado',
-  'https://i.pinimg.com/736x/2f/4c/ff/2f4cff29b51dad68ffecbacdab842433.jpg',
-  'Фигурка Незуко Камадо из Demon Slayer.',
-  '2600 ₽'
-)">
-  <img src="https://i.pinimg.com/736x/2f/4c/ff/2f4cff29b51dad68ffecbacdab842433.jpg">
-  <h3>Nezuko Kamado</h3>
-  <p>Цена: 2600 ₽</p>
-</div>
-
-<div class="card" onclick="openProduct(
-  'Goku',
-  'https://i.pinimg.com/1200x/b0/c2/a1/b0c2a11865a25a31f37fe15dc477be32.jpg',
-  'Фигурка Сон Гоку из Dragon Ball.',
-  '3500 ₽'
-)">
-  <img src="https://i.pinimg.com/1200x/b0/c2/a1/b0c2a11865a25a31f37fe15dc477be32.jpg">
-  <h3>Goku</h3>
-  <p>Цена: 3500 ₽</p>
-</div>
-
-<div class="card" onclick="openProduct(
-  'Vegeta',
-  'https://i.pinimg.com/1200x/2c/24/63/2c2463d40a01d44c2fad906f404524a1.jpg',
-  'Фигурка Вегеты из Dragon Ball.',
-  '3400 ₽'
-)">
-  <img src="https://i.pinimg.com/1200x/2c/24/63/2c2463d40a01d44c2fad906f404524a1.jpg">
-  <h3>Vegeta</h3>
-  <p>Цена: 3400 ₽</p>
-</div>
-
-<div class="card" onclick="openProduct(
-  'Mikasa Ackerman',
-  'https://i.pinimg.com/1200x/11/4f/a4/114fa4cafd19032bdfc18216eec8c108.jpg',
-  'Фигурка Микасы Аккерман из «Атаки титанов».',
-  '3000 ₽'
-)">
-  <img src="https://i.pinimg.com/1200x/11/4f/a4/114fa4cafd19032bdfc18216eec8c108.jpg">
-  <h3>Mikasa Ackerman</h3>
-  <p>Цена: 3000 ₽</p>
-</div>
-
-<div class="card" onclick="openProduct(
-  'Ichigo Kurosaki',
-  'https://i.pinimg.com/1200x/53/a0/2b/53a02bd11cb9b23d16fefd50084b2712.jpg',
-  'Фигурка Ичиго Куросаки из Bleach.',
-  '3200 ₽'
-)">
-  <img src="https://i.pinimg.com/1200x/53/a0/2b/53a02bd11cb9b23d16fefd50084b2712.jpg">
-  <h3>Ichigo Kurosaki</h3>
-  <p>Цена: 3200 ₽</p>
-</div>
-
-<div class="card" onclick="openProduct(
-  'Light Yagami',
-  'https://i.pinimg.com/736x/5f/9e/8e/5f9e8e6d640ee6f680098dd71336acda.jpg',
-  'Фигурка Лайта Ягами из Death Note.',
-  '2800 ₽'
-)">
-  <img src="https://i.pinimg.com/736x/5f/9e/8e/5f9e8e6d640ee6f680098dd71336acda.jpg">
-  <h3>Light Yagami</h3>
-  <p>Цена: 2800 ₽</p>
-</div>
-
+      <h3>Наша цель</h3>
+      <p><b>Довольные клиенты</b>. Мы делаем покупку простой и приятной 💖</p>
     </div>
   </div>
 
-  <!-- Карточка товара -->
-  <div id="product" class="page">
-    <h2>Карточка товара</h2>
-    <img id="product-img" src="" alt="Товар">
-    <h3 id="product-title"></h3>
-    <p id="product-desc"></p>
-    <p><b>Цена:</b> <span id="product-price"></span></p>
-    <button class="btn" onclick="addToCart()">Добавить в корзину</button>
-    <button class="btn" onclick="showPage('catalogPage')" style="margin-left:10px;">Назад в каталог</button>
+  <footer>
+    <p>©2026 Anime Store</p>
+  </footer>
+
+  <!-- PAY MODAL -->
+  <div id="payOverlay" class="overlay" style="z-index:10001;">
+    <div class="modalBox">
+      <div class="modalHeader">
+        <div>
+          <h3>Оформление заказа</h3>
+          <small>Доставка + способ оплаты</small>
+        </div>
+        <button class="btn ghost" type="button" onclick="closePay()">✕</button>
+      </div>
+
+      <div class="sumBox">
+        <div class="sumLine"><span>Товары:</span> <b id="sumGoods">0 ₽</b></div>
+        <div class="sumLine"><span>Доставка:</span> <b id="sumDelivery">0 ₽</b></div>
+        <div class="sumLine"><span>Скидка:</span> <b id="sumDiscount">0 ₽</b></div>
+        <hr style="opacity:.2;">
+        <div class="sumLine"><span>Итого:</span> <b id="sumFinal">0 ₽</b></div>
+      </div>
+
+      <!-- Delivery -->
+      <div class="row">
+        <label>Доставка</label>
+        <div class="chips">
+          <label class="chip">
+            <input type="radio" name="delivery" value="courier" checked onchange="renderDeliveryUI()">
+            <span>Курьер (+ <span id="deliveryFeeLabel">200 ₽</span>)</span>
+          </label>
+          <label class="chip">
+            <input type="radio" name="delivery" value="pickup" onchange="renderDeliveryUI()">
+            <span>Самовывоз (0 ₽)</span>
+          </label>
+        </div>
+      </div>
+
+      <div id="deliveryForm">
+        <div class="row">
+          <label for="receiver">Получатель</label>
+          <input id="receiver" type="text" placeholder="Имя получателя">
+        </div>
+
+        <div class="row" id="addressRow">
+          <label for="address">Адрес доставки</label>
+          <input id="address" type="text" placeholder="Город, улица, дом, квартира">
+        </div>
+
+        <div class="row">
+          <label for="phone">Телефон</label>
+          <input id="phone" type="text" inputmode="tel" placeholder="+996 700 000 000">
+        </div>
+
+        <div class="row">
+          <label for="comment">Комментарий курьеру</label>
+          <input id="comment" type="text" placeholder="Домофон, подъезд, этаж, примечания">
+        </div>
+      </div>
+
+      <!-- Promo -->
+      <div class="row">
+        <label for="promo">Промокод</label>
+        <div style="display:flex; gap:10px;">
+          <input id="promo" type="text" placeholder="например: ANIME10">
+          <button class="btn ghost" type="button" onclick="applyPromo()">Применить</button>
+        </div>
+        <div class="hint" id="promoHint">Демо-коды: ANIME10 (-10%), FREEDEL (доставка 0₽)</div>
+      </div>
+
+      <!-- Payment method -->
+      <div class="row">
+        <label>Способ оплаты</label>
+        <div class="chips">
+          <label class="chip">
+            <input type="radio" name="payMethod" value="card" checked onchange="renderPayMethodUI()">
+            <span>Картой</span>
+          </label>
+          <label class="chip">
+            <input type="radio" name="payMethod" value="cod" onchange="renderPayMethodUI()">
+            <span>Оплата при получении</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Saved cards -->
+      <div class="row" id="savedMethodsRow">
+        <label>Сохранённые карты</label>
+        <select id="savedCards" onchange="fillFromSavedCard()"></select>
+        <div class="hint">Можно выбрать сохранённую карту или заполнить новую.</div>
+      </div>
+
+      <!-- Card form -->
+      <div id="cardForm">
+        <div class="grid2">
+          <div class="row">
+            <label for="cardName">Имя на карте</label>
+            <input id="cardName" type="text" placeholder="IVAN IVANOV">
+          </div>
+          <div class="row">
+            <label for="cardNumber">Номер карты</label>
+            <input id="cardNumber" type="text" inputmode="numeric" placeholder="0000 0000 0000 0000" maxlength="19">
+          </div>
+          <div class="row">
+            <label for="cardExp">Срок (MM/YY)</label>
+            <input id="cardExp" type="text" inputmode="numeric" placeholder="12/30" maxlength="5">
+          </div>
+          <div class="row">
+            <label for="cardCvv">CVV</label>
+            <input id="cardCvv" type="password" inputmode="numeric" placeholder="123" maxlength="3">
+          </div>
+        </div>
+        <div class="row">
+          <label style="display:flex; gap:10px; align-items:center;">
+            <input id="saveCard" type="checkbox" style="width:auto;">
+            <span>Сохранить карту для будущих покупок</span>
+          </label>
+        </div>
+      </div>
+
+      <div id="payError" class="error">Проверьте введённые данные.</div>
+
+      <div class="actions">
+        <button class="btn ghost" type="button" onclick="closePay()">Отмена</button>
+        <button class="btn" type="button" onclick="confirmPay()">Подтвердить</button>
+      </div>
+
+      <div class="hint">*Это демо-оплата. Деньги никуда не списываются.</div>
+    </div>
   </div>
 
-  <!-- Корзина -->
- <div id="cart" class="page">
-  <h2>Корзина</h2>
+  <script>
+    /* =======================
+       Tabs + scroll fix
+    ======================== */
+    function showPage(pageId){
+      document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+      document.getElementById(pageId).classList.add("active");
 
-  <ul id="cart-list"></ul>
+      document.querySelectorAll("nav button").forEach(b => b.classList.remove("activeTab"));
+      const btn = document.querySelector(`nav button[onclick="showPage('${pageId}')"]`);
+      if (btn) btn.classList.add("activeTab");
 
-  <p><b>Итого:</b> <span id="total-price">0 ₽</span></p>
-
-  <div class="cart-actions">
-    <button class="btn ghost" onclick="clearCart()">Очистить корзину</button>
-    <button class="btn primary" onclick="pay()">Оплатить</button>
-  </div>
-</div>
-
-
-  <!-- О нас -->
-<div id="about" class="page">
-  <h2>О нас</h2>
-
-  <p>
-    <b>Anime Store</b> — это не просто интернет-магазин, а место, созданное фанатами аниме для фанатов аниме.
-    Мы выросли на культовых тайтлах, запоминали любимые сцены, спорили о персонажах и в какой-то момент поняли:
-    нам хочется делиться этой атмосферой с другими.
-  </p>
-
-  <p>
-    Наша идея проста — <b>дать возможность каждому поклоннику японской анимации прикоснуться к любимым героям в реальной жизни</b>.
-    Именно поэтому мы тщательно подбираем ассортимент и работаем только с проверенными поставщиками, уделяя внимание качеству,
-    деталям и оригинальности фигурок.
-  </p>
-
-  <h3>Что для нас важно</h3>
-  <p>
-    Мы уверены, что коллекционная фигурка — это не просто товар. Это эмоции, воспоминания и способ выразить свою любовь к персонажу.
-    Поэтому мы уделяем внимание:
-  </p>
-
-  <ul>
-    <li><b>Качеству материалов и покраски</b></li>
-    <li><b>Детализации и соответствию оригинальному образу</b></li>
-    <li><b>Надёжной упаковке</b>, чтобы товар дошёл до вас в идеальном состоянии</li>
-  </ul>
-
-  <h3>Наш ассортимент</h3>
-  <p>
-    В <b>Anime Store</b> вы найдёте фигурки персонажей из популярных и культовых аниме:
-    Naruto, One Piece, Attack on Titan, Demon Slayer, Jujutsu Kaisen, Dragon Ball и многих других.
-    Мы регулярно обновляем каталог и следим за новинками, чтобы радовать как начинающих коллекционеров, так и опытных фанатов.
-  </p>
-
-  <h3>Для кого мы работаем</h3>
-  <p>Наш магазин создан:</p>
-  <ul>
-    <li>для коллекционеров</li>
-    <li>для поклонников аниме</li>
-    <li>для тех, кто ищет <b>оригинальный подарок</b></li>
-    <li>для всех, кто хочет добавить в свою жизнь немного аниме-магии</li>
-  </ul>
-
-  <h3>Наша цель</h3>
-  <p>
-    Наша главная цель — <b>довольные клиенты</b>. Мы стремимся сделать покупку простой, понятной и приятной,
-    чтобы вы возвращались к нам снова и снова.
-  </p>
-
-  <p>
-    <b>Anime Store</b> — это место, где аниме становится ближе.<br>
-    Спасибо, что вы с нами 💖
-  </p>
-</div>
-
-
-</div>
-
-<footer>
-  <p>©2026 Anime Store</p>
-</footer>
-
-<script>
-  // Переключение страниц
-  function showPage(pageId) {
-  const pages = document.querySelectorAll('.page');
-  pages.forEach(p => p.classList.remove('active'));
-  document.getElementById(pageId).classList.add('active');
-
-  // подсветка активной вкладки в меню
-  document.querySelectorAll('nav button').forEach(b => b.classList.remove('activeTab'));
-  const btn = document.querySelector(`nav button[onclick="showPage('${pageId}')"]`);
-  if (btn) btn.classList.add('activeTab');
-    // всегда прокручиваем вверх при смене страницы
-  window.scrollTo({ top: 0, left: 0, behavior: "instant" });
-
-}
-
-
-  // Корзина и выбранный товар
-  let cart = [];
-  let currentProduct = null;
-
-  // Корзина пустая при старте
-  updateCart();
-
-  // Открыть карточку товара
-  function openProduct(title, img, desc, price) {
-    document.getElementById('product-title').innerText = title;
-    document.getElementById('product-img').src = img;
-    document.getElementById('product-desc').innerText = desc;
-    document.getElementById('product-price').innerText = price;
-
-    currentProduct = { title, price };
-
-    showPage('product');
-    window.scrollTo(0,0)
-  }
-
-  // Добавить в корзину
-  function addToCart() {
-    if (!currentProduct) return;
-
-    cart.push(currentProduct);
-    updateCart();
-    alert('Товар добавлен в корзину!');
-  }
-
-  // Обновить корзину
-  function updateCart() {
-    const list = document.getElementById('cart-list');
-    const total = document.getElementById('total-price');
-
-    list.innerHTML = '';
-
-    if (cart.length === 0) {
-      list.innerHTML = '<li>Корзина пуста.</li>';
-      total.textContent = '0 ₽';
-      return;
+      window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+      if (pageId === "orders") renderOrders();
     }
 
-    let sum = 0;
+    /* =======================
+       Cart
+    ======================== */
+    let cart = [];
+    let currentProduct = null;
 
-    cart.forEach(item => {
-      const li = document.createElement('li');
-      li.textContent = `${item.title} — ${item.price}`;
-      list.appendChild(li);
+    function openProduct(title, img, desc, price){
+      document.getElementById("product-title").innerText = title;
+      document.getElementById("product-img").src = img;
+      document.getElementById("product-desc").innerText = desc;
+      document.getElementById("product-price").innerText = price;
+      currentProduct = { title, price };
+      showPage("product");
+      window.scrollTo(0,0);
+    }
 
-      sum += parseInt(item.price);
+    function addToCart(){
+      if (!currentProduct) return;
+      cart.push(currentProduct);
+      updateCart();
+      alert("Товар добавлен в корзину!");
+    }
+
+    function removeCartItem(index){
+      cart.splice(index, 1);
+      updateCart();
+    }
+
+    function updateCart(){
+      const list = document.getElementById("cart-list");
+      const total = document.getElementById("total-price");
+      list.innerHTML = "";
+
+      if (!cart.length){
+        list.innerHTML = "<li>Корзина пуста.</li>";
+        total.textContent = "0 ₽";
+        return;
+      }
+
+      let sum = 0;
+      cart.forEach((item, idx) => {
+        const li = document.createElement("li");
+        li.innerHTML = `
+          <span>${item.title} — ${item.price}</span>
+          <button class="removeItemBtn" type="button" onclick="removeCartItem(${idx})">Удалить</button>
+        `;
+        list.appendChild(li);
+        sum += parseInt(item.price, 10);
+      });
+
+      total.textContent = sum + " ₽";
+    }
+
+    function clearCart(){
+      cart = [];
+      updateCart();
+    }
+
+    window.openProduct = openProduct;
+    window.addToCart = addToCart;
+    window.removeCartItem = removeCartItem;
+    window.clearCart = clearCart;
+
+    /* =======================
+       Loader (1 раз)
+    ======================== */
+    document.body.style.overflow = "hidden";
+    window.addEventListener("load", () => {
+      setTimeout(() => {
+        document.getElementById("loader").classList.add("hide");
+        document.body.style.overflow = "auto";
+      }, 900);
     });
 
-    total.textContent = sum + ' ₽';
-  }
+    /* =======================
+       Accent themes
+    ======================== */
+    const THEMES = {
+      red:    { accent: "#ef4444", accent2: "#dc2626" },
+      blue:   { accent: "#3b82f6", accent2: "#2563eb" },
+      orange: { accent: "#f97316", accent2: "#ea580c" },
+      purple: { accent: "#8b5cf6", accent2: "#7c3aed" },
+    };
 
-  // Очистить корзину
-  function clearCart() {
-    cart = [];
-    updateCart();
-  }
-  // Экран загрузки
-window.addEventListener('load', () => {
-  const loader = document.getElementById('loader');
+    function applyTheme(name){
+      const t = THEMES[name] || THEMES.purple;
+      document.documentElement.style.setProperty("--accent", t.accent);
+      document.documentElement.style.setProperty("--accent-2", t.accent2);
+    }
 
-  setTimeout(() => {
-    loader.classList.add('hide');
-  }, 1200); // 1.2 секунды для "вау-эффекта"
-});
+    function setTheme(name){
+      localStorage.setItem("theme", name);
+      applyTheme(name);
+    }
+    window.setTheme = setTheme;
 
-// Блокировка прокрутки при загрузке
-document.body.style.overflow = 'hidden';
+    /* =======================
+       Light/Dark
+    ======================== */
+    function toggleMode(){
+      const isDark = document.body.classList.toggle("dark");
+      document.body.classList.toggle("light", !isDark);
+      localStorage.setItem("mode", isDark ? "dark" : "light");
+      updateModeIcon();
+    }
 
-window.addEventListener('load', () => {
-  const loader = document.getElementById('loader');
+    function updateModeIcon(){
+      const btn = document.querySelector(".mode-btn");
+      if (!btn) return;
+      btn.textContent = document.body.classList.contains("dark") ? "☀" : "🌙";
+    }
+    window.toggleMode = toggleMode;
 
-  setTimeout(() => {
-    loader.classList.add('hide');
-    document.body.style.overflow = 'auto'; // возвращаем прокрутку
-  }, 1200);
-});
+    /* =======================
+       Auth (demo)
+    ======================== */
+    const AUTH_USERS = [
+      { login: "admin", pass: "1234" },
+      { login: "matew", pass: "0000" },
+    ];
 
-function pay() {
-  if (cart.length === 0) {
-    alert('Корзина пуста. Добавьте товары перед оплатой.');
-    return;
-  }
+    function showAuth(show){
+      const ov = document.getElementById("authOverlay");
+      ov.classList.toggle("show", !!show);
+      document.body.style.overflow = show ? "hidden" : "auto";
+    }
 
-  const total = document.getElementById('total-price').innerText;
+    function setAuthState(isAuthed, login){
+      sessionStorage.setItem("isAuthed", isAuthed ? "1" : "0");
+      sessionStorage.setItem("authLogin", login || "");
+    }
 
-  const confirmPay = confirm(
-    `Сумма к оплате: ${total}\n\nПодтвердить оплату?`
-  );
+    function login(){
+      const loginEl = document.getElementById("authLogin");
+      const passEl  = document.getElementById("authPass");
+      const err     = document.getElementById("authError");
 
-  if (confirmPay) {
-    alert('✅ Оплата прошла успешно!\nСпасибо за покупку 💖');
-    clearCart();
-    showPage('home');
-  }
-}
-const THEMES = {
-  red:    { accent: "#ef4444", accent2: "#dc2626" },
-  blue:   { accent: "#3b82f6", accent2: "#2563eb" },
-  orange: { accent: "#f97316", accent2: "#ea580c" },
-  purple: { accent: "#8b5cf6", accent2: "#7c3aed" },
-};
+      const l = (loginEl.value || "").trim();
+      const p = (passEl.value || "").trim();
 
-function applyTheme(name){
-  const t = THEMES[name] || THEMES.purple;
-  document.documentElement.style.setProperty("--accent", t.accent);
-  document.documentElement.style.setProperty("--accent-2", t.accent2);
-}
+      const ok = AUTH_USERS.some(u => u.login === l && u.pass === p);
+      if (!ok){
+        err.classList.add("show");
+        setAuthState(false, "");
+        return;
+      }
 
-function setTheme(name){
-  localStorage.setItem("theme", name);
-  applyTheme(name);
-}
+      err.classList.remove("show");
+      setAuthState(true, l);
+      showAuth(false);
+    }
 
-/* делаем явным глобальным доступ для onclick="" */
-window.setTheme = setTheme;
+    function logout(){
+      setAuthState(false, "");
+      showAuth(true);
+    }
 
-window.addEventListener("load", () => {
-  applyTheme(localStorage.getItem("theme") || "purple");
-});
+    function fillDemo(){
+      document.getElementById("authLogin").value = "admin";
+      document.getElementById("authPass").value  = "1234";
+    }
 
+    window.login = login;
+    window.logout = logout;
+    window.fillDemo = fillDemo;
 
-// ===== Light / Dark =====
-function toggleMode(){
-  const isDark = document.body.classList.toggle("dark");
-  document.body.classList.toggle("light", !isDark);
+    function bootAuth(){
+      const isAuthed = sessionStorage.getItem("isAuthed") === "1";
+      showAuth(!isAuthed);
+    }
 
-  localStorage.setItem("mode", isDark ? "dark" : "light");
-  updateModeIcon();
-}
+    /* =======================
+       Pay + Promo + Saved cards
+    ======================== */
+    const STORAGE_CARDS_KEY = "savedCards";
+    const STORAGE_PREF_METHOD = "preferredPayMethod";
+    const STORAGE_PREF_DELIVERY = "preferredDelivery";
+    const ORDERS_KEY = "ordersHistory";
 
-function updateModeIcon(){
-  const btn = document.querySelector(".mode-btn");
-  if (!btn) return;
+    let promoState = { code: "", discountPercent: 0, freeDelivery: false };
 
-  btn.textContent = document.body.classList.contains("dark") ? "☀" : "🌙";
-}
+    function getSavedCards(){
+      try { return JSON.parse(localStorage.getItem(STORAGE_CARDS_KEY) || "[]"); }
+      catch { return []; }
+    }
+    function setSavedCards(cards){
+      localStorage.setItem(STORAGE_CARDS_KEY, JSON.stringify(cards));
+    }
 
-// старт
-window.addEventListener("load", () => {
-  const mode = localStorage.getItem("mode") || "dark";
-  document.body.classList.add(mode);
-  updateModeIcon();
-});
+    function getOrders(){
+      try { return JSON.parse(localStorage.getItem(ORDERS_KEY) || "[]"); }
+      catch { return []; }
+    }
+    function setOrders(list){
+      localStorage.setItem(ORDERS_KEY, JSON.stringify(list));
+    }
 
-/* делаем глобальным */
-window.toggleMode = toggleMode;
+    function getPayMethod(){
+      return document.querySelector('input[name="payMethod"]:checked')?.value || "card";
+    }
+    function getDelivery(){
+      return document.querySelector('input[name="delivery"]:checked')?.value || "courier";
+    }
 
-// ===== AUTH (простая фронтенд-авторизация) =====
-const AUTH_USERS = [
-  { login: "admin", pass: "1234" },
-  { login: "matew", pass: "0000" },
-];
+    function calcGoodsSum(){
+      return cart.reduce((s, i) => s + parseInt(i.price, 10), 0);
+    }
+    function deliveryFee(){
+      return getDelivery() === "courier" ? 200 : 0;
+    }
+    function calcDiscount(goods){
+      return Math.round(goods * (promoState.discountPercent / 100));
+    }
 
-function showAuth(show){
-  const ov = document.getElementById("authOverlay");
-  if (!ov) return;
-  ov.classList.toggle("show", !!show);
+    function updatePaySummary(){
+      const goods = calcGoodsSum();
+      const delBase = deliveryFee();
+      const del = promoState.freeDelivery ? 0 : delBase;
+      const disc = calcDiscount(goods);
+      const final = Math.max(0, goods + del - disc);
 
-  // блокируем/разблокируем прокрутку под модалкой
-  document.body.style.overflow = show ? "hidden" : "auto";
-}
+      const rub = n => `${n} ₽`;
+      document.getElementById("sumGoods").textContent = rub(goods);
+      document.getElementById("sumDelivery").textContent = rub(del);
+      document.getElementById("sumDiscount").textContent = disc ? `- ${rub(disc)}` : "0 ₽";
+      document.getElementById("sumFinal").textContent = rub(final);
 
-function setAuthState(isAuthed, login){
- sessionStorage.setItem("isAuthed", isAuthed ? "1" : "0");
-sessionStorage.setItem("authLogin", login || "");
+      document.getElementById("deliveryFeeLabel").textContent = promoState.freeDelivery ? "0 ₽" : "200 ₽";
+    }
 
-}
+    function populateSavedCards(){
+      const sel = document.getElementById("savedCards");
+      const cards = getSavedCards();
+      sel.innerHTML = "";
 
-function login(){
-  const loginEl = document.getElementById("authLogin");
-  const passEl  = document.getElementById("authPass");
-  const err     = document.getElementById("authError");
+      const opt0 = document.createElement("option");
+      opt0.value = "";
+      opt0.textContent = cards.length ? "— Выберите карту —" : "— Нет сохранённых карт —";
+      sel.appendChild(opt0);
 
-  const l = (loginEl.value || "").trim();
-  const p = (passEl.value || "").trim();
+      cards.forEach((c, idx) => {
+        const opt = document.createElement("option");
+        opt.value = String(idx);
+        opt.textContent = `${c.brand} •••• ${c.last4} (${c.name})`;
+        sel.appendChild(opt);
+      });
+    }
 
-  const ok = AUTH_USERS.some(u => u.login === l && u.pass === p);
+    function fillFromSavedCard(){
+      const sel = document.getElementById("savedCards");
+      const idx = Number(sel.value);
+      const cards = getSavedCards();
+      if (!Number.isFinite(idx) || !cards[idx]) return;
 
-  if (!ok){
-    err.classList.add("show");
-    setAuthState(false, "");
-    return;
-  }
+      const c = cards[idx];
+      document.getElementById("cardName").value = c.name;
+      document.getElementById("cardNumber").value = c.masked;
+      document.getElementById("cardExp").value = c.exp;
+      document.getElementById("cardCvv").value = "";
+      document.getElementById("saveCard").checked = false;
+    }
+    window.fillFromSavedCard = fillFromSavedCard;
 
-  err.classList.remove("show");
-  setAuthState(true, l);
-  showAuth(false);
-}
+    function renderPayMethodUI(){
+      const method = getPayMethod();
+      localStorage.setItem(STORAGE_PREF_METHOD, method);
 
-function logout(){
-  setAuthState(false, "");
-  showAuth(true);
-}
+      const showCard = method === "card";
+      document.getElementById("cardForm").style.display = showCard ? "" : "none";
+      document.getElementById("savedMethodsRow").style.display = showCard ? "" : "none";
 
-function fillDemo(){
-  document.getElementById("authLogin").value = "admin";
-  document.getElementById("authPass").value  = "1234";
-}
+      updatePaySummary();
+    }
+    window.renderPayMethodUI = renderPayMethodUI;
 
-function bootAuth(){
-  const isAuthed = sessionStorage.getItem("isAuthed") === "1";
+    function renderDeliveryUI(){
+      const d = getDelivery();
+      localStorage.setItem(STORAGE_PREF_DELIVERY, d);
 
-  showAuth(!isAuthed);
-}
+      document.getElementById("addressRow").style.display = (d === "courier") ? "" : "none";
+      updatePaySummary();
+    }
+    window.renderDeliveryUI = renderDeliveryUI;
 
-// делаем доступным для onclick
-window.login = login;
-window.logout = logout;
-window.fillDemo = fillDemo;
+    function openPay(){
+      if (!cart.length){
+        alert("Корзина пуста. Добавьте товары перед оплатой.");
+        return;
+      }
 
-window.addEventListener("load", () => {
-  bootAuth();
-});
+      promoState = { code: "", discountPercent: 0, freeDelivery: false };
+      document.getElementById("promo").value = "";
+      document.getElementById("promoHint").textContent = "Демо-коды: ANIME10 (-10%), FREEDEL (доставка 0₽)";
 
-</script>
+      // prefs
+      const prefPay = localStorage.getItem(STORAGE_PREF_METHOD) || "card";
+      const payRadio = document.querySelector(`input[name="payMethod"][value="${prefPay}"]`);
+      if (payRadio) payRadio.checked = true;
 
+      const prefDel = localStorage.getItem(STORAGE_PREF_DELIVERY) || "courier";
+      const delRadio = document.querySelector(`input[name="delivery"][value="${prefDel}"]`);
+      if (delRadio) delRadio.checked = true;
+
+      populateSavedCards();
+      renderPayMethodUI();
+      renderDeliveryUI();
+      updatePaySummary();
+
+      document.getElementById("payError").classList.remove("show");
+      document.getElementById("payOverlay").classList.add("show");
+      document.body.style.overflow = "hidden";
+    }
+
+    function closePay(){
+      document.getElementById("payOverlay").classList.remove("show");
+      document.body.style.overflow = "auto";
+    }
+
+    window.openPay = openPay;
+    window.closePay = closePay;
+
+    function applyPromo(){
+      const v = (document.getElementById("promo").value || "").trim().toUpperCase();
+      const hint = document.getElementById("promoHint");
+
+      if (v === "ANIME10"){
+        promoState = { code: v, discountPercent: 10, freeDelivery: false };
+        hint.textContent = "✅ Промокод ANIME10 применён: скидка -10% на товары.";
+      } else if (v === "FREEDEL"){
+        promoState = { code: v, discountPercent: 0, freeDelivery: true };
+        hint.textContent = "✅ Промокод FREEDEL применён: доставка бесплатно.";
+      } else if (!v){
+        promoState = { code: "", discountPercent: 0, freeDelivery: false };
+        hint.textContent = "Демо-коды: ANIME10 (-10%), FREEDEL (доставка 0₽)";
+      } else {
+        promoState = { code: "", discountPercent: 0, freeDelivery: false };
+        hint.textContent = "❌ Такой промокод не найден (демо: ANIME10, FREEDEL).";
+      }
+      updatePaySummary();
+    }
+    window.applyPromo = applyPromo;
+
+    function formatCardNumber(value){
+      const digits = value.replace(/\D/g, "").slice(0,16);
+      return digits.replace(/(.{4})/g, "$1 ").trim();
+    }
+    function formatExp(value){
+      const digits = value.replace(/\D/g, "").slice(0,4);
+      if (digits.length <= 2) return digits;
+      return digits.slice(0,2) + "/" + digits.slice(2);
+    }
+
+    function validateCard(){
+      const name = document.getElementById("cardName").value.trim();
+      const numRaw = document.getElementById("cardNumber").value.replace(/\s/g,"");
+      const exp = document.getElementById("cardExp").value.trim();
+      const cvv = document.getElementById("cardCvv").value.trim();
+
+      if (name.length < 3) return false;
+      if (!/^\d{16}$/.test(numRaw)) return false;
+      if (!/^\d{2}\/\d{2}$/.test(exp)) return false;
+      if (!/^\d{3}$/.test(cvv)) return false;
+
+      const [mm, yy] = exp.split("/").map(x => parseInt(x,10));
+      if (mm < 1 || mm > 12) return false;
+
+      const now = new Date();
+      const curYY = now.getFullYear() % 100;
+      const curMM = now.getMonth() + 1;
+
+      if (yy < curYY) return false;
+      if (yy === curYY && mm < curMM) return false;
+
+      return true;
+    }
+
+    function validateDelivery(){
+      const receiver = document.getElementById("receiver").value.trim();
+      const phone = document.getElementById("phone").value.trim();
+      const d = getDelivery();
+      const address = document.getElementById("address").value.trim();
+
+      if (receiver.length < 2) return false;
+      if (phone.length < 8) return false;
+      if (d === "courier" && address.length < 8) return false;
+      return true;
+    }
+
+    function detectBrand(numRaw){
+      if (numRaw.startsWith("4")) return "VISA";
+      if (/^5[1-5]/.test(numRaw)) return "Mastercard";
+      if (numRaw.startsWith("2")) return "МИР";
+      return "Карта";
+    }
+
+    function saveCardIfNeeded(){
+      const wantSave = document.getElementById("saveCard").checked;
+      if (!wantSave) return;
+
+      const name = document.getElementById("cardName").value.trim();
+      const numRaw = document.getElementById("cardNumber").value.replace(/\s/g,"");
+      const exp = document.getElementById("cardExp").value.trim();
+
+      const last4 = numRaw.slice(-4);
+      const brand = detectBrand(numRaw);
+      const masked = "•••• •••• •••• " + last4;
+
+      const cards = getSavedCards();
+      const exists = cards.some(c => c.last4 === last4 && c.exp === exp && c.name === name);
+      if (exists) return;
+
+      cards.push({ name, last4, exp, brand, masked });
+      setSavedCards(cards);
+    }
+
+    function confirmPay(){
+      const err = document.getElementById("payError");
+      err.classList.remove("show");
+
+      if (!validateDelivery()){
+        err.textContent = "Проверьте получателя/телефон/адрес доставки.";
+        err.classList.add("show");
+        return;
+      }
+
+      const method = getPayMethod();
+      if (method === "card"){
+        if (!validateCard()){
+          err.textContent = "Проверьте данные карты (номер/срок/CVV).";
+          err.classList.add("show");
+          return;
+        }
+        saveCardIfNeeded();
+      }
+
+      const goods = calcGoodsSum();
+      const delBase = deliveryFee();
+      const del = promoState.freeDelivery ? 0 : delBase;
+      const disc = calcDiscount(goods);
+      const final = Math.max(0, goods + del - disc);
+
+      const payMethodText = (method === "card") ? "Картой" : "При получении";
+      const deliveryText = (getDelivery() === "courier") ? "Курьер" : "Самовывоз";
+
+      const receiver = document.getElementById("receiver").value.trim();
+      const phone = document.getElementById("phone").value.trim();
+      const address = (getDelivery() === "courier") ? document.getElementById("address").value.trim() : "";
+      const comment = document.getElementById("comment").value.trim();
+
+      const order = {
+        id: String(Date.now()).slice(-6),
+        date: new Date().toLocaleString(),
+        items: cart.map(x => ({ title: x.title, price: x.price })),
+        payMethod: payMethodText,
+        delivery: deliveryText,
+        receiver,
+        phone,
+        address,
+        comment,
+        promo: promoState.code || "",
+        total: `${final} ₽`
+      };
+
+      const orders = getOrders();
+      orders.push(order);
+      setOrders(orders);
+
+      closePay();
+
+      setTimeout(() => {
+        alert(`✅ Заказ оформлен!\nОплата: ${payMethodText}\nДоставка: ${deliveryText}\nСумма: ${final} ₽\n\nСпасибо за покупку 💖`);
+        clearCart();
+        renderOrders();
+        showPage("orders");
+      }, 250);
+    }
+    window.confirmPay = confirmPay;
+
+    window.addEventListener("input", (e) => {
+      if (e.target && e.target.id === "cardNumber"){
+        const raw = e.target.value.replace(/\s/g,"");
+        if (raw.includes("•")) return;
+        e.target.value = formatCardNumber(e.target.value);
+      }
+      if (e.target && e.target.id === "cardExp"){
+        e.target.value = formatExp(e.target.value);
+      }
+    });
+
+    /* =======================
+       Orders render + delete ONE order ✅
+    ======================== */
+    function renderOrders(){
+      const wrap = document.getElementById("ordersList");
+      const orders = getOrders();
+
+      if (!orders.length){
+        wrap.innerHTML = `<div class="orderCard">Пока нет заказов.</div>`;
+        return;
+      }
+
+      // newest first
+      const view = orders.slice().reverse();
+
+      wrap.innerHTML = view.map(o => {
+        const itemsText = o.items.map(i => `• ${i.title} — ${i.price}`).join("<br>");
+        return `
+          <div class="orderCard">
+            <div class="orderHead">
+              <div>
+                <b>Заказ #${o.id}</b>
+                <div style="opacity:.75;font-size:12px;margin-top:4px;">${o.date}</div>
+              </div>
+              <div><b>${o.total}</b></div>
+            </div>
+
+            <div class="orderItems">${itemsText}</div>
+
+            <div class="orderMeta">
+              <div><b>Оплата:</b> ${o.payMethod}</div>
+              <div><b>Доставка:</b> ${o.delivery}</div>
+              <div><b>Получатель:</b> ${o.receiver}</div>
+              <div><b>Телефон:</b> ${o.phone}</div>
+              ${o.address ? `<div><b>Адрес:</b> ${o.address}</div>` : `<div><b>Адрес:</b> самовывоз</div>`}
+              ${o.comment ? `<div><b>Комментарий:</b> ${o.comment}</div>` : ""}
+              ${o.promo ? `<div><b>Промокод:</b> ${o.promo}</div>` : ""}
+            </div>
+
+            <div class="orderActions">
+              <button class="btn dangerBtn" type="button" onclick="deleteOrder('${o.id}')">Удалить заказ</button>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function deleteOrder(orderId){
+      if (!confirm(`Удалить заказ #${orderId}?`)) return;
+      const orders = getOrders();
+      const next = orders.filter(o => o.id !== orderId);
+      setOrders(next);
+      renderOrders();
+    }
+
+    function clearOrders(){
+      if (!confirm("Очистить историю заказов?")) return;
+      setOrders([]);
+      renderOrders();
+    }
+
+    window.deleteOrder = deleteOrder;
+    window.clearOrders = clearOrders;
+
+    /* =======================
+       Boot
+    ======================== */
+    (function init(){
+      // theme accent
+      applyTheme(localStorage.getItem("theme") || "purple");
+
+      // mode
+      const mode = localStorage.getItem("mode") || "dark";
+      document.body.classList.add(mode);
+      document.body.classList.toggle("light", mode === "light");
+      document.body.classList.toggle("dark", mode === "dark");
+      updateModeIcon();
+
+      // auth
+      bootAuth();
+
+      // initial cart render
+      updateCart();
+    })();
+  </script>
 </body>
 </html>
