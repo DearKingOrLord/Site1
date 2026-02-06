@@ -733,7 +733,53 @@
             <h3 style="margin:0 0 6px;">Топ-популярное</h3>
             <p style="margin:0 0 14px; opacity:.85;">Нажми на персонажа — откроется карточка товара.</p>
 
-            <div class="catalog">
+            <div class="mini-grid">
+              <div class="mini" onclick="openProduct('Naruto','https://i.pinimg.com/736x/de/97/79/de9779f6bcb1772a7e46e09c252052c8.jpg','Фигурка Наруто Узумаки из аниме Naruto.','2500 ₽')">
+                <img src="https://i.pinimg.com/736x/de/97/79/de9779f6bcb1772a7e46e09c252052c8.jpg" alt="Naruto">
+                <div><b>Naruto</b><small>2500 ₽</small></div>
+              </div>
+
+              <div class="mini" onclick="openProduct('Gojo Satoru','https://i.pinimg.com/736x/4b/a8/7c/4ba87cc0815a34837d21f560bcfcb694.jpg','Коллекционная фигурка из аниме «Jujutsu Kaisen».','3200 ₽')">
+                <img src="https://i.pinimg.com/736x/4b/a8/7c/4ba87cc0815a34837d21f560bcfcb694.jpg" alt="Gojo">
+                <div><b>Gojo</b><small>3200 ₽</small></div>
+              </div>
+
+              <div class="mini" onclick="openProduct('Luffy','https://i.pinimg.com/1200x/2d/0f/6f/2d0f6f2e5e09cac2448aad5bb55d48d8.jpg','Фигурка Монки Д. Луффи из One Piece.','2800 ₽')">
+                <img src="https://i.pinimg.com/1200x/2d/0f/6f/2d0f6f2e5e09cac2448aad5bb55d48d8.jpg" alt="Luffy">
+                <div><b>Luffy</b><small>2800 ₽</small></div>
+              </div>
+
+              <div class="mini" onclick="openProduct('Eren Yeager','https://i.pinimg.com/1200x/3c/cc/1d/3ccc1dc40eb3a8310994e512b0583210.jpg','Фигурка Эрена Йегера из «Атаки титанов».','3000 ₽')">
+                <img src="https://i.pinimg.com/1200x/3c/cc/1d/3ccc1dc40eb3a8310994e512b0583210.jpg" alt="Eren">
+                <div><b>Eren</b><small>3000 ₽</small></div>
+              </div>
+            </div>
+
+            <button class="btn miniBtn" onclick="showPage('catalogPage')">Смотреть все товары</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="features">
+        <div class="feature">
+          <h4 style="margin:0 0 6px;">🛡️ Надёжная упаковка</h4>
+          <p>Фигурки приезжают целыми: защита, пупырка, аккуратная коробка.</p>
+        </div>
+        <div class="feature">
+          <h4 style="margin:0 0 6px;">✅ Качество и детализация</h4>
+          <p>Тщательно отбираем модели, чтобы они выглядели как в аниме.</p>
+        </div>
+        <div class="feature">
+          <h4 style="margin:0 0 6px;">🎁 Подарки фанатам</h4>
+          <p>Идеально на день рождения, новый год и просто “порадовать себя”.</p>
+        </div>
+      </section>
+    </div>
+
+    <!-- CATALOG -->
+    <div id="catalogPage" class="page">
+      <h2>Каталог</h2>
+      <div class="catalog">
 
   <div class="card" onclick="openProduct('Naruto','https://i.pinimg.com/736x/de/97/79/de9779f6bcb1772a7e46e09c252052c8.jpg','Фигурка Наруто Узумаки из аниме Naruto.','2500 ₽')">
     <img src="https://i.pinimg.com/736x/de/97/79/de9779f6bcb1772a7e46e09c252052c8.jpg" alt="Naruto">
@@ -807,62 +853,6 @@
 
 </div>
 
-
-            <button class="btn miniBtn" onclick="showPage('catalogPage')">Смотреть все товары</button>
-          </div>
-        </div>
-      </section>
-
-      <section class="features">
-        <div class="feature">
-          <h4 style="margin:0 0 6px;">🛡️ Надёжная упаковка</h4>
-          <p>Фигурки приезжают целыми: защита, пупырка, аккуратная коробка.</p>
-        </div>
-        <div class="feature">
-          <h4 style="margin:0 0 6px;">✅ Качество и детализация</h4>
-          <p>Тщательно отбираем модели, чтобы они выглядели как в аниме.</p>
-        </div>
-        <div class="feature">
-          <h4 style="margin:0 0 6px;">🎁 Подарки фанатам</h4>
-          <p>Идеально на день рождения, новый год и просто “порадовать себя”.</p>
-        </div>
-      </section>
-    </div>
-
-    <!-- CATALOG -->
-    <div id="catalogPage" class="page">
-      <h2>Каталог</h2>
-      <div class="catalog">
-        <div class="card" onclick="openProduct('Naruto','https://i.pinimg.com/736x/de/97/79/de9779f6bcb1772a7e46e09c252052c8.jpg','Фигурка Наруто Узумаки из аниме Naruto.','2500 ₽')">
-          <img src="https://i.pinimg.com/736x/de/97/79/de9779f6bcb1772a7e46e09c252052c8.jpg" alt="Naruto">
-          <h3>Naruto</h3><p>Цена: 2500 ₽</p>
-        </div>
-
-        <div class="card" onclick="openProduct('Gojo Satoru','https://i.pinimg.com/736x/4b/a8/7c/4ba87cc0815a34837d21f560bcfcb694.jpg','Коллекционная фигурка из аниме «Jujutsu Kaisen».','3200 ₽')">
-          <img src="https://i.pinimg.com/736x/4b/a8/7c/4ba87cc0815a34837d21f560bcfcb694.jpg" alt="Gojo Satoru">
-          <h3>Gojo Satoru</h3><p>Цена: 3200 ₽</p>
-        </div>
-
-        <div class="card" onclick="openProduct('Luffy','https://i.pinimg.com/1200x/2d/0f/6f/2d0f6f2e5e09cac2448aad5bb55d48d8.jpg','Фигурка Монки Д. Луффи из One Piece.','2800 ₽')">
-          <img src="https://i.pinimg.com/1200x/2d/0f/6f/2d0f6f2e5e09cac2448aad5bb55d48d8.jpg" alt="Luffy">
-          <h3>Luffy</h3><p>Цена: 2800 ₽</p>
-        </div>
-
-        <div class="card" onclick="openProduct('Eren Yeager','https://i.pinimg.com/1200x/3c/cc/1d/3ccc1dc40eb3a8310994e512b0583210.jpg','Фигурка Эрена Йегера из «Атаки титанов».','3000 ₽')">
-          <img src="https://i.pinimg.com/1200x/3c/cc/1d/3ccc1dc40eb3a8310994e512b0583210.jpg" alt="Eren Yeager">
-          <h3>Eren Yeager</h3><p>Цена: 3000 ₽</p>
-        </div>
-
-        <div class="card" onclick="openProduct('Itachi Uchiha','https://i.pinimg.com/1200x/0d/7c/fb/0d7cfbc983aad8c520c335c04f85e40c.jpg','Фигурка Итачи Учихи из аниме Naruto Shippuden.','3100 ₽')">
-          <img src="https://i.pinimg.com/1200x/0d/7c/fb/0d7cfbc983aad8c520c335c04f85e40c.jpg" alt="Itachi">
-          <h3>Itachi Uchiha</h3><p>Цена: 3100 ₽</p>
-        </div>
-
-        <div class="card" onclick="openProduct('Levi Ackerman','https://i.pinimg.com/736x/dc/31/a9/dc31a95682b372be65164c47d6ca9060.jpg','Фигурка Леви Аккермана из «Атаки титанов».','3300 ₽')">
-          <img src="https://i.pinimg.com/736x/dc/31/a9/dc31a95682b372be65164c47d6ca9060.jpg" alt="Levi">
-          <h3>Levi Ackerman</h3><p>Цена: 3300 ₽</p>
-        </div>
-      </div>
     </div>
 
     <!-- PRODUCT -->
