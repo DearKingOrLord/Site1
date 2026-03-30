@@ -644,7 +644,6 @@ body {
 </head>
 
 <body>
-  
 
   <!-- Loader -->
   <div id="loader">
@@ -702,12 +701,6 @@ body {
     <h1 style="margin:0;">Anime Store</h1>
     <p style="margin:6px 0 0;">Интернет-магазин аниме фигурок</p>
   </header>
-
-  <div class="container">
-  <div id="home" class="page active">
-
-    <p>Используйте поиск выше, чтобы найти любимых героев.</p>
-  </div>
 
   <nav>
     <button onclick="showPage('home')">Главная</button>
@@ -1057,25 +1050,7 @@ body {
 
   <script>
 
-
-  // Функция ПОИСКА и ФИЛЬТРАЦИИ
-  function filterProducts() {
-    const query = document.getElementById('searchInput').value.toLowerCase();
     
-    // Фильтруем массив
-    const filtered = products.filter(p => 
-      p.name.toLowerCase().includes(query) || 
-      p.category.toLowerCase().includes(query)
-    );
-
-    // Если мы не на странице каталога, переключим на неё автоматически при поиске
-    if (query.length > 0) {
-       showPage('catalogPage');
-    }
-
-    renderProducts(filtered);
-  }
-
     /* =======================
        Tabs + scroll fix
     ======================== */
