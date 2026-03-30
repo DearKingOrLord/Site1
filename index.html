@@ -128,23 +128,18 @@
     }
 
 /* Базовое состояние для всех страниц */
-.page {
-  display: none;        /* Убирает из потока */
-  visibility: hidden;   /* На всякий случай для старых браузеров */
-  max-height: 0;        /* Обнуляем высоту */
-  overflow: hidden;     /* Запрещаем контенту распирать блок */
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-/* Состояние только для ОДНОЙ активной страницы */
-.page.active {
-  display: block;       /* Возвращаем в поток */
-  visibility: visible;
-  max-height: none;     /* Разрешаем странице быть любой длины */
-  overflow: visible;
-  opacity: 1;
-}
+    /* Исправленные страницы без лишнего скролла */
+    .page {
+      display: none;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: 0.3s;
+    }
+    .page.active {
+      display: block;
+      opacity: 1;
+      transform: translateY(0);
+    }
 
 /* Убедись, что у body нет странных отступов */
 body {
@@ -1057,14 +1052,13 @@ body {
     /* =======================
        Tabs + scroll fix
     ======================== */
- function showPage(pageId) {
-  const pages = document.querySelectorAll('.page');
-  
-  pages.forEach(p => {
-    p.classList.remove('active');
-    // Явно прописываем стили, чтобы перебить любые другие правила
-    p.style.display = 'none';
-  });
+  // Переключение страниц (без скролла)
+  function showPage(pageId) {
+    const pages = document.querySelectorAll('.page');
+    pages.forEach(p => {
+      p.classList.remove('active');
+      p.style.display = 'none';
+    });
 
   const target = document.getElementById(pageId);
   if (target) {
