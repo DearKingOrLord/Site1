@@ -127,19 +127,30 @@
       box-shadow: var(--shadow);
     }
 
-/* Стили для секций (страниц) */
+/* Базовое состояние для всех страниц */
 .page {
-  display: none; /* ПОЛНОСТЬЮ убираем страницу, чтобы не было скролла */
+  display: none;        /* Убирает из потока */
+  visibility: hidden;   /* На всякий случай для старых браузеров */
+  max-height: 0;        /* Обнуляем высоту */
+  overflow: hidden;     /* Запрещаем контенту распирать блок */
   opacity: 0;
-  transform: translateY(10px);
-  transition: opacity 0.3s ease, transform 0.3s ease;
+  transition: opacity 0.3s ease;
 }
 
-/* Активная вкладка */
+/* Состояние только для ОДНОЙ активной страницы */
 .page.active {
-  display: block; /* Показываем только текущую страницу */
+  display: block;       /* Возвращаем в поток */
+  visibility: visible;
+  max-height: none;     /* Разрешаем странице быть любой длины */
+  overflow: visible;
   opacity: 1;
-  transform: translateY(0);
+}
+
+/* Убедись, что у body нет странных отступов */
+body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;   /* Убираем горизонтальную прокрутку */
 }
 
     footer{
@@ -1046,37 +1057,33 @@
     /* =======================
        Tabs + scroll fix
     ======================== */
-   function showPage(pageId) {
-  // 1. Находим все страницы
+ function showPage(pageId) {
   const pages = document.querySelectorAll('.page');
   
-  // 2. Скрываем все страницы (display: none)
   pages.forEach(p => {
     p.classList.remove('active');
-    p.style.display = 'none'; 
+    // Явно прописываем стили, чтобы перебить любые другие правила
+    p.style.display = 'none';
   });
 
-  // 3. Находим нужную страницу
-  const targetPage = document.getElementById(pageId);
-  if (targetPage) {
-    targetPage.style.display = 'block'; // Сначала даем место в DOM
-    
-    // Небольшая задержка для запуска анимации появления
+  const target = document.getElementById(pageId);
+  if (target) {
+    target.style.display = 'block';
+    // Используем setTimeout, чтобы браузер успел применить display: block перед анимацией
     setTimeout(() => {
-      targetPage.classList.add('active');
+      target.classList.add('active');
     }, 10);
 
-    // 4. СБРОС СКРОЛЛА: самое важное, чтобы не оставаться внизу
-    window.scrollTo({
-      top: 0,
-      behavior: 'instant' // или 'smooth', если хочешь плавно
-    });
+    // МГНОВЕННЫЙ сброс скролла всей страницы в ноль
+    window.scrollTo(0, 0);
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
   }
 
-  // 5. Подсветка активной вкладки в меню
+  // Обновляем кнопки в меню
   document.querySelectorAll('nav button').forEach(b => b.classList.remove('activeTab'));
-  const btn = document.querySelector(`nav button[onclick="showPage('${pageId}')"]`);
-  if (btn) btn.classList.add('activeTab');
+  const activeBtn = document.querySelector(`nav button[onclick*="${pageId}"]`);
+  if (activeBtn) activeBtn.classList.add('activeTab');
 }
 
     /* =======================
