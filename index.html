@@ -127,23 +127,20 @@
       box-shadow: var(--shadow);
     }
 
-    /* tabs animation */
-    .page{
-      position: absolute;
-      left: 0;
-      top: 0;
-      width: 100%;
-      opacity: 0;
-      transform: translateY(12px);
-      pointer-events: none;
-      transition: opacity .35s ease, transform .35s ease;
-    }
-    .page.active{
-      opacity: 1;
-      transform: translateY(0);
-      pointer-events: auto;
-      position: relative;
-    }
+/* Стили для секций (страниц) */
+.page {
+  display: none; /* ПОЛНОСТЬЮ убираем страницу, чтобы не было скролла */
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+/* Активная вкладка */
+.page.active {
+  display: block; /* Показываем только текущую страницу */
+  opacity: 1;
+  transform: translateY(0);
+}
 
     footer{
       background: #111;
@@ -1049,17 +1046,38 @@
     /* =======================
        Tabs + scroll fix
     ======================== */
-    function showPage(pageId){
-      document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
-      document.getElementById(pageId).classList.add("active");
+   function showPage(pageId) {
+  // 1. Находим все страницы
+  const pages = document.querySelectorAll('.page');
+  
+  // 2. Скрываем все страницы (display: none)
+  pages.forEach(p => {
+    p.classList.remove('active');
+    p.style.display = 'none'; 
+  });
 
-      document.querySelectorAll("nav button").forEach(b => b.classList.remove("activeTab"));
-      const btn = document.querySelector(`nav button[onclick="showPage('${pageId}')"]`);
-      if (btn) btn.classList.add("activeTab");
+  // 3. Находим нужную страницу
+  const targetPage = document.getElementById(pageId);
+  if (targetPage) {
+    targetPage.style.display = 'block'; // Сначала даем место в DOM
+    
+    // Небольшая задержка для запуска анимации появления
+    setTimeout(() => {
+      targetPage.classList.add('active');
+    }, 10);
 
-      window.scrollTo({ top: 0, left: 0, behavior: "instant" });
-      if (pageId === "orders") renderOrders();
-    }
+    // 4. СБРОС СКРОЛЛА: самое важное, чтобы не оставаться внизу
+    window.scrollTo({
+      top: 0,
+      behavior: 'instant' // или 'smooth', если хочешь плавно
+    });
+  }
+
+  // 5. Подсветка активной вкладки в меню
+  document.querySelectorAll('nav button').forEach(b => b.classList.remove('activeTab'));
+  const btn = document.querySelector(`nav button[onclick="showPage('${pageId}')"]`);
+  if (btn) btn.classList.add('activeTab');
+}
 
     /* =======================
        Cart
