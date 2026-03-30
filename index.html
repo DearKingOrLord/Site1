@@ -70,6 +70,24 @@
       text-align: center;
     }
 
+    /* Стили поиска */
+    .search-container {
+      padding: 10px;
+      display: flex;
+      justify-content: center;
+      background: #222;
+    }
+    #searchInput {
+      padding: 10px 15px;
+      width: 300px;
+      border-radius: 20px;
+      border: 1px solid #444;
+      background: #333;
+      color: white;
+      outline: none;
+    }
+    #searchInput:focus { border-color: var(--accent); }
+
     nav{
       background: var(--nav-bg);
       display: flex;
@@ -705,7 +723,6 @@ body {
 
   <div class="container">
   <div id="home" class="page active">
-    <h2>Добро пожаловать!</h2>
     <p>Используйте поиск выше, чтобы найти любимых героев.</p>
   </div>
 
