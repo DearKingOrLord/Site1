@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<script type="text/javascript">
+   (function(){
+      // Замени на свой Public Key из личного кабинета
+      emailjs.init("l5VZRAztSJam0L5ac");
+   })();
+</script>
+
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Anime Store — интернет-магазин фигурок</title>
@@ -1556,6 +1564,36 @@ body {
       const orders = getOrders();
       orders.push(order);
       setOrders(orders);
+
+
+      // 1. Формируем список товаров для письма (из переменной cart)
+      let itemsList = cart.map(item => `${item.name} (${item.price} ₽)`).join("\n");
+
+      // 2. Собираем данные для шаблона (имена слева должны быть как в шаблоне EmailJS)
+      const templateParams = {
+        order_id: order.id,
+        user_name: order.name,
+        user_phone: order.phone,
+        order_details: itemsList,
+        total_price: final + " ₽",
+        pay_method: payMethodText,
+        delivery: deliveryText
+      };
+
+      // 3. Отправляем через EmailJS
+      // Замени 'YOUR_SERVICE_ID' и 'YOUR_TEMPLATE_ID' на свои из личного кабинета
+      emailjs.send('l5VZRAztSJam0L5ac', 'template_mwx2p2c', templateParams)
+        .then(function(response) {
+           console.log('Письмо отправлено!', response.status, response.text);
+        }, function(error) {
+           console.log('Ошибка почты:', error);
+        });
+
+      // --- КОНЕЦ БЛОКА ОТПРАВКИ ---
+
+
+
+
 
       closePay();
 
