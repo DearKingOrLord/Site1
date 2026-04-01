@@ -709,6 +709,14 @@ body {
     <button onclick="showPage('about')">О нас</button>
     <button onclick="showPage('orders')">Заказы</button>
     <button class="navRight" onclick="logout()" title="Выйти из аккаунта">Выйти</button>
+
+
+    <!--Search-->
+    <div style="text-align: center; padding: 15px; background: rgba(0,0,0,0.2);">
+    <input type="text" id="searchInput" placeholder="Поиск по названию..." 
+           oninput="fastSearch()" 
+           style="padding: 10px 20px; width: 300px; border-radius: 20px; border: 1px solid var(--accent); background: #222; color: white; outline: none;">
+</div>
   </nav>
 
   <div class="container">
@@ -1655,6 +1663,31 @@ body {
       // initial carfghfght render
       updateCart();
     })();
+
+    function fastSearch() {
+    // 1. Получаем текст из поиска
+    const filter = document.getElementById('searchInput').value.toLowerCase();
+    
+    // 2. Находим ВСЕ карточки (убедись, что у твоих карточек есть класс .card)
+    const cards = document.querySelectorAll('.card');
+
+    cards.forEach(card => {
+        // 3. Ищем заголовок внутри карточки (h3 или любой текст)
+        const title = card.querySelector('h3').innerText.toLowerCase();
+        
+        // 4. Если текст совпадает, показываем карточку, если нет — скрываем
+        if (title.includes(filter)) {
+            card.style.display = ""; // Возвращаем стандартное отображение
+        } else {
+            card.style.display = "none"; // Полностью убираем с экрана
+        }
+    });
+
+    // 5. Автоматически переключаем на страницу каталога, если человек начал искать
+    if (filter.length > 0) {
+        showPage('catalogPage'); 
+    }
+}
   </script>
 </body>
 </html>
